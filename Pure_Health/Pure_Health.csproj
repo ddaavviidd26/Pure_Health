@@ -52,10 +52,70 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form2.Designer.cs">
+      <DependentUpon>Form2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formAccounting.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formAccounting.Designer.cs">
+      <DependentUpon>formAccounting.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formAudittrails.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formAudittrails.Designer.cs">
+      <DependentUpon>formAudittrails.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formDashboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formDashboard.Designer.cs">
+      <DependentUpon>formDashboard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formEmployees.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formEmployees.Designer.cs">
+      <DependentUpon>formEmployees.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formInventory.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formInventory.Designer.cs">
+      <DependentUpon>formInventory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formPatient.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formPatient.Designer.cs">
+      <DependentUpon>formPatient.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formReports.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formReports.Designer.cs">
+      <DependentUpon>formReports.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formScheduling.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formScheduling.Designer.cs">
+      <DependentUpon>formScheduling.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form2.resx">
+      <DependentUpon>Form2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formDashboard.resx">
+      <DependentUpon>formDashboard.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -91,6 +151,48 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\padlock %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\menu.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\menu %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\dashboard.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\dashboard1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\dashboard %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\home.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\patient.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\shipping.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\teamwork.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\schedule.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\profit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\valuation.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\report.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\logout.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -26,5 +26,30 @@ namespace Pure_Health
         {
 
         }
+
+        private void label2_Click(object sender, EventArgs e)
+        {         
+                // Optional: Confirm exit
+                var result = MessageBox.Show("Are you sure you want to exit?", "Confirm Exit", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                if (result == DialogResult.Yes)
+                {
+                    // Close the form
+                    this.Close();
+                }
+            }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            // Create an instance of Form2
+            Form2 form2 = new Form2();
+
+            // Show Form2
+            form2.Show();
+
+            // Optionally, hide or close Form1
+            this.Hide();
+            // Or use this.Close(); if you want to terminate Form1
+        }
     }
 }
