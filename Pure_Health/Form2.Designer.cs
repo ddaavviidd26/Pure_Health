@@ -140,10 +140,10 @@
             this.btnDashboard.Font = new System.Drawing.Font("Cambria", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnDashboard.Image = global::Pure_Health.Properties.Resources.dashboard__1_;
             this.btnDashboard.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnDashboard.Location = new System.Drawing.Point(-10, -21);
+            this.btnDashboard.Location = new System.Drawing.Point(-16, -21);
             this.btnDashboard.Name = "btnDashboard";
             this.btnDashboard.Padding = new System.Windows.Forms.Padding(25, 0, 0, 0);
-            this.btnDashboard.Size = new System.Drawing.Size(293, 99);
+            this.btnDashboard.Size = new System.Drawing.Size(299, 99);
             this.btnDashboard.TabIndex = 4;
             this.btnDashboard.Text = "Dashboard";
             this.btnDashboard.UseVisualStyleBackColor = false;
@@ -157,7 +157,7 @@
             this.menuContainer.Controls.Add(this.panel8);
             this.menuContainer.Location = new System.Drawing.Point(3, 91);
             this.menuContainer.Name = "menuContainer";
-            this.menuContainer.Size = new System.Drawing.Size(282, 52);
+            this.menuContainer.Size = new System.Drawing.Size(285, 52);
             this.menuContainer.TabIndex = 7;
             // 
             // panel10
@@ -181,6 +181,7 @@
             this.btnEmployee.TabIndex = 4;
             this.btnEmployee.Text = "Employee";
             this.btnEmployee.UseVisualStyleBackColor = false;
+            this.btnEmployee.Click += new System.EventHandler(this.btnEmployee_Click);
             // 
             // panel9
             // 
@@ -196,13 +197,14 @@
             this.btnInventory.Font = new System.Drawing.Font("Cambria", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnInventory.Image = global::Pure_Health.Properties.Resources.shipping;
             this.btnInventory.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnInventory.Location = new System.Drawing.Point(-13, -21);
+            this.btnInventory.Location = new System.Drawing.Point(-13, -16);
             this.btnInventory.Name = "btnInventory";
             this.btnInventory.Padding = new System.Windows.Forms.Padding(25, 0, 0, 0);
             this.btnInventory.Size = new System.Drawing.Size(297, 99);
             this.btnInventory.TabIndex = 4;
             this.btnInventory.Text = "Inventory";
             this.btnInventory.UseVisualStyleBackColor = false;
+            this.btnInventory.Click += new System.EventHandler(this.btnInventory_Click);
             // 
             // panel7
             // 
@@ -218,11 +220,11 @@
             this.menu.Font = new System.Drawing.Font("Cambria", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.menu.Image = global::Pure_Health.Properties.Resources.home;
             this.menu.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.menu.Location = new System.Drawing.Point(-13, -21);
+            this.menu.Location = new System.Drawing.Point(-19, -21);
             this.menu.Margin = new System.Windows.Forms.Padding(0);
             this.menu.Name = "menu";
             this.menu.Padding = new System.Windows.Forms.Padding(25, 0, 0, 0);
-            this.menu.Size = new System.Drawing.Size(293, 99);
+            this.menu.Size = new System.Drawing.Size(299, 99);
             this.menu.TabIndex = 4;
             this.menu.Text = "Menu";
             this.menu.UseVisualStyleBackColor = false;
@@ -242,7 +244,7 @@
             this.btnPatient.Font = new System.Drawing.Font("Cambria", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnPatient.Image = global::Pure_Health.Properties.Resources.patient;
             this.btnPatient.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnPatient.Location = new System.Drawing.Point(-13, -21);
+            this.btnPatient.Location = new System.Drawing.Point(-13, -12);
             this.btnPatient.Margin = new System.Windows.Forms.Padding(0);
             this.btnPatient.Name = "btnPatient";
             this.btnPatient.Padding = new System.Windows.Forms.Padding(25, 0, 0, 0);
@@ -250,6 +252,7 @@
             this.btnPatient.TabIndex = 4;
             this.btnPatient.Text = "Patient";
             this.btnPatient.UseVisualStyleBackColor = false;
+            this.btnPatient.Click += new System.EventHandler(this.btnPatient_Click);
             // 
             // panel3
             // 
@@ -272,6 +275,7 @@
             this.btnScheduling.TabIndex = 4;
             this.btnScheduling.Text = "Scheduling";
             this.btnScheduling.UseVisualStyleBackColor = false;
+            this.btnScheduling.Click += new System.EventHandler(this.btnScheduling_Click);
             // 
             // panel4
             // 
@@ -294,6 +298,7 @@
             this.btnAccounting.TabIndex = 4;
             this.btnAccounting.Text = "Accounting";
             this.btnAccounting.UseVisualStyleBackColor = false;
+            this.btnAccounting.Click += new System.EventHandler(this.btnAccounting_Click);
             // 
             // panel2
             // 
@@ -316,6 +321,7 @@
             this.btnAudittrails.TabIndex = 4;
             this.btnAudittrails.Text = "Audit Trails";
             this.btnAudittrails.UseVisualStyleBackColor = false;
+            this.btnAudittrails.Click += new System.EventHandler(this.btnAudittrails_Click);
             // 
             // panel11
             // 
@@ -338,6 +344,7 @@
             this.btnReports.TabIndex = 4;
             this.btnReports.Text = "Reports";
             this.btnReports.UseVisualStyleBackColor = false;
+            this.btnReports.Click += new System.EventHandler(this.btnReports_Click);
             // 
             // panel5
             // 
@@ -360,6 +367,7 @@
             this.btnLogout.TabIndex = 4;
             this.btnLogout.Text = "Log out";
             this.btnLogout.UseVisualStyleBackColor = false;
+            this.btnLogout.Click += new System.EventHandler(this.btnLogout_Click);
             // 
             // menutransition
             // 

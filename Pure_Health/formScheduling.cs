@@ -16,5 +16,10 @@ namespace Pure_Health
         {
             InitializeComponent();
         }
+
+        private void formScheduling_Load(object sender, EventArgs e)
+        {
+            this.ControlBox = false;
+        }
     }
 }

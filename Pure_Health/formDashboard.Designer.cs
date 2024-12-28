@@ -35,22 +35,25 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Cambria", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(323, 294);
+            this.label1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.label1.Location = new System.Drawing.Point(35, 34);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(306, 57);
             this.label1.TabIndex = 0;
             this.label1.Text = "DASHBOARD";
+            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // formDashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1013, 708);
+            this.ClientSize = new System.Drawing.Size(1025, 743);
             this.Controls.Add(this.label1);
-            this.ForeColor = System.Drawing.Color.Black;
+            this.ForeColor = System.Drawing.SystemColors.Control;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "formDashboard";
             this.Text = "formDashboard";
+            this.Load += new System.EventHandler(this.formDashboard_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

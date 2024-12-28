@@ -41,15 +41,16 @@ namespace Pure_Health
 
         private void button1_Click(object sender, EventArgs e)
         {
-            // Create an instance of Form2
-            Form2 form2 = new Form2();
-
-            // Show Form2
-            form2.Show();
-
-            // Optionally, hide or close Form1
+            
+            Form3 form3 = new Form3();        
+            form3.Show();
             this.Hide();
-            // Or use this.Close(); if you want to terminate Form1
+           
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
