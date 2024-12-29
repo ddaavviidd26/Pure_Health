@@ -15,6 +15,7 @@ namespace Pure_Health
         public formDashboard()
         {
             InitializeComponent();
+            Anchor = AnchorStyles.Bottom | AnchorStyles.Right | AnchorStyles.Left;
         }
 
         private void formDashboard_Load(object sender, EventArgs e)

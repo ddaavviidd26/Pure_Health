@@ -20,9 +20,11 @@ namespace Pure_Health
         formAudittrails audittrails;
         formAccounting accounting;
         formReports reports;
+
         public Form2()
         {
             InitializeComponent();
+              
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -114,13 +116,13 @@ namespace Pure_Health
         }
 
         private void btnPatient_Click(object sender, EventArgs e)
-        {
-            if(patient==null)
+        {       
+            if (patient==null)
             {
                 patient= new formPatient();
                 patient.FormClosed += patient_FormClosed;
                 patient.MdiParent = this;
-                patient.Dock= DockStyle.Fill;
+                patient.Dock= DockStyle.Fill;              
                 patient.Show();
             }else
             {

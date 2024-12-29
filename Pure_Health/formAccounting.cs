@@ -15,6 +15,7 @@ namespace Pure_Health
         public formAccounting()
         {
             InitializeComponent();
+            Anchor = AnchorStyles.Bottom | AnchorStyles.Right | AnchorStyles.Left;
         }
 
         private void formAccounting_Load(object sender, EventArgs e)

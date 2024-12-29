@@ -15,6 +15,7 @@ namespace Pure_Health
         public formScheduling()
         {
             InitializeComponent();
+            Anchor = AnchorStyles.Bottom | AnchorStyles.Right | AnchorStyles.Left;
         }
 
         private void formScheduling_Load(object sender, EventArgs e)

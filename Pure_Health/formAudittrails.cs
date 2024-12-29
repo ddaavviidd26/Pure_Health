@@ -15,6 +15,7 @@ namespace Pure_Health
         public formAudittrails()
         {
             InitializeComponent();
+            Anchor = AnchorStyles.Bottom | AnchorStyles.Right | AnchorStyles.Left;
         }
 
         private void formAudittrails_Load(object sender, EventArgs e)

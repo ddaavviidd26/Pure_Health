@@ -15,6 +15,7 @@ namespace Pure_Health
         public formEmployees()
         {
             InitializeComponent();
+            Anchor = AnchorStyles.Bottom | AnchorStyles.Right | AnchorStyles.Left;
         }
 
         private void formEmployees_Load(object sender, EventArgs e)

@@ -15,6 +15,7 @@ namespace Pure_Health
         public formReports()
         {
             InitializeComponent();
+            Anchor = AnchorStyles.Bottom | AnchorStyles.Right | AnchorStyles.Left;
         }
 
         private void formReports_Load(object sender, EventArgs e)

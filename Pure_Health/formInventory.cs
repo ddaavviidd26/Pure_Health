@@ -15,6 +15,7 @@ namespace Pure_Health
         public formInventory()
         {
             InitializeComponent();
+            Anchor = AnchorStyles.Bottom | AnchorStyles.Right | AnchorStyles.Left;
         }
 
         private void formInventory_Load(object sender, EventArgs e)

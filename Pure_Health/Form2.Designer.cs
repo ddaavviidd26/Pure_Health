@@ -137,7 +137,7 @@
             // btnDashboard
             // 
             this.btnDashboard.BackColor = System.Drawing.Color.Green;
-            this.btnDashboard.Font = new System.Drawing.Font("Cambria", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnDashboard.Font = new System.Drawing.Font("Cambria", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnDashboard.Image = global::Pure_Health.Properties.Resources.dashboard__1_;
             this.btnDashboard.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnDashboard.Location = new System.Drawing.Point(-16, -21);
@@ -171,7 +171,7 @@
             // btnEmployee
             // 
             this.btnEmployee.BackColor = System.Drawing.Color.SeaGreen;
-            this.btnEmployee.Font = new System.Drawing.Font("Cambria", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnEmployee.Font = new System.Drawing.Font("Cambria", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnEmployee.Image = global::Pure_Health.Properties.Resources.teamwork;
             this.btnEmployee.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnEmployee.Location = new System.Drawing.Point(-13, -21);
@@ -194,7 +194,7 @@
             // btnInventory
             // 
             this.btnInventory.BackColor = System.Drawing.Color.SeaGreen;
-            this.btnInventory.Font = new System.Drawing.Font("Cambria", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnInventory.Font = new System.Drawing.Font("Cambria", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnInventory.Image = global::Pure_Health.Properties.Resources.shipping;
             this.btnInventory.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnInventory.Location = new System.Drawing.Point(-13, -16);
@@ -217,7 +217,7 @@
             // menu
             // 
             this.menu.BackColor = System.Drawing.Color.Green;
-            this.menu.Font = new System.Drawing.Font("Cambria", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.menu.Font = new System.Drawing.Font("Cambria", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.menu.Image = global::Pure_Health.Properties.Resources.home;
             this.menu.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.menu.Location = new System.Drawing.Point(-19, -21);
@@ -241,7 +241,7 @@
             // btnPatient
             // 
             this.btnPatient.BackColor = System.Drawing.Color.SeaGreen;
-            this.btnPatient.Font = new System.Drawing.Font("Cambria", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnPatient.Font = new System.Drawing.Font("Cambria", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnPatient.Image = global::Pure_Health.Properties.Resources.patient;
             this.btnPatient.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnPatient.Location = new System.Drawing.Point(-13, -12);
@@ -265,7 +265,7 @@
             // btnScheduling
             // 
             this.btnScheduling.BackColor = System.Drawing.Color.Green;
-            this.btnScheduling.Font = new System.Drawing.Font("Cambria", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnScheduling.Font = new System.Drawing.Font("Cambria", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnScheduling.Image = global::Pure_Health.Properties.Resources.schedule;
             this.btnScheduling.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnScheduling.Location = new System.Drawing.Point(-13, -21);
@@ -288,7 +288,7 @@
             // btnAccounting
             // 
             this.btnAccounting.BackColor = System.Drawing.Color.Green;
-            this.btnAccounting.Font = new System.Drawing.Font("Cambria", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnAccounting.Font = new System.Drawing.Font("Cambria", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnAccounting.Image = global::Pure_Health.Properties.Resources.profit;
             this.btnAccounting.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnAccounting.Location = new System.Drawing.Point(-13, -21);
@@ -311,7 +311,7 @@
             // btnAudittrails
             // 
             this.btnAudittrails.BackColor = System.Drawing.Color.Green;
-            this.btnAudittrails.Font = new System.Drawing.Font("Cambria", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnAudittrails.Font = new System.Drawing.Font("Cambria", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnAudittrails.Image = global::Pure_Health.Properties.Resources.valuation;
             this.btnAudittrails.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnAudittrails.Location = new System.Drawing.Point(-13, -21);
@@ -334,7 +334,7 @@
             // btnReports
             // 
             this.btnReports.BackColor = System.Drawing.Color.Green;
-            this.btnReports.Font = new System.Drawing.Font("Cambria", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnReports.Font = new System.Drawing.Font("Cambria", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnReports.Image = global::Pure_Health.Properties.Resources.report;
             this.btnReports.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnReports.Location = new System.Drawing.Point(-13, -21);
@@ -357,7 +357,7 @@
             // btnLogout
             // 
             this.btnLogout.BackColor = System.Drawing.Color.Green;
-            this.btnLogout.Font = new System.Drawing.Font("Cambria", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnLogout.Font = new System.Drawing.Font("Cambria", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnLogout.Image = global::Pure_Health.Properties.Resources.logout;
             this.btnLogout.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnLogout.Location = new System.Drawing.Point(-13, -21);
@@ -383,6 +383,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(1293, 753);
             this.Controls.Add(this.sidebar);
             this.Controls.Add(this.panel1);
