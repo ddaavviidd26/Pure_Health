@@ -54,7 +54,6 @@ namespace Pure_Health
 
         private void button1_Click(object sender, EventArgs e)
         {
-            SelectedItems = checkedListBox1.CheckedItems.Cast<string>().ToList();
             DialogResult = DialogResult.OK;
             Close();
         }
