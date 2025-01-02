@@ -12,6 +12,7 @@ namespace Pure_Health
 {
     public partial class formPatient : Form
     {
+     
         public formPatient()
         {
             InitializeComponent();
@@ -26,6 +27,22 @@ namespace Pure_Health
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            using (var popup = new checklistboxform())
+            {
+                if (popup.ShowDialog() == DialogResult.OK)
+                {
+                    MessageBox.Show("Selected: " + string.Join(", ", popup.SelectedItems));
+                }
+            }
         }
     }
 }

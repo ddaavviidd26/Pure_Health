@@ -52,5 +52,10 @@ namespace Pure_Health
         {
 
         }
+
+        private void Username_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
