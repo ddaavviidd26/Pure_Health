@@ -15,10 +15,42 @@ namespace Pure_Health
         public List<string> SelectedItems { get; private set; } = new List<string>();
         private Dictionary<string, decimal> itemPrices = new Dictionary<string, decimal>
     {
-        { "Option 1", 260.00m },
-        { "Option 2", 260.00m },
-        { "Option 3", 260.00m },
-        { "Option 4", 150.00m }
+        { "CBC + Platelet Count", 260.00m },
+        { "Blood Typing with RH Typing", 260.00m },
+        { "ESR", 260.00m },
+        { "CT BT", 150.00m },
+        { "FBS",  155.00m },
+        { "BUN", 155.00m },
+        { "Creatinine",  155.00m },
+        { "Blood Uric Acid",  155.00m },
+        { "Cholesterol",  255.00m },
+        { "Triglycerides", 255.00m },
+        { "HDL", 255.00m },
+        { "LDL", 255.00m },
+        { "VLDL", 255.00m },
+        { "SGOT", 255.00m },
+        { "SGPT", 255.00m },
+        { "Protime", 460.00m },
+        { "PTT-Retic Count", 450.00m },
+        { "Malarial Smear", 400.00m },
+        { "PBS (blood smear)", 505.00m },
+        { "VDRL/RPR", 255.00m },
+        { "Widal Test", 375.00m },
+        { "Sodium", 255.00m },
+        { "Potassium", 255.00m },
+        { "Urinalysis", 85.00m },
+        { "Fecalysis", 80.00m },
+        { "Phosphorus", 310.00m },
+        { "Magnesium", 350.00m },
+        { "Acid Phos.", 350.00m },
+        { "Alka Phos.", 350.00m },
+        { "CPK-MB", 1100.00m },
+        { "CPK-MM", 1100.00m },
+        { "Troponin I/T", 1250.00m },
+        { "HEPA B PROFILE", 2050.00m },
+        { "HEPA ABC PROFILE", 3100.00m },
+
+
     };
         public decimal TotalPrice { get; private set; } = 0;
         public checklistboxform()
@@ -38,7 +70,24 @@ namespace Pure_Health
 
         private void checkedListBox1_ItemCheck(object sender, ItemCheckEventArgs e)
         {
+            var item = checkedListBox1.Items[e.Index].ToString();
+            
+            if (itemPrices.ContainsKey(item))
+            {
+                var price = itemPrices[item];
 
+                // Adjust TotalPrice based on the new state of the item
+                if (e.NewValue == CheckState.Checked && !SelectedItems.Contains(item))
+                {
+                    TotalPrice += price;
+                    SelectedItems.Add(item);
+                }
+                else if (e.NewValue == CheckState.Unchecked)
+                {
+                    TotalPrice -= price;
+                    SelectedItems.Remove(item);
+                }
+            }
         }
 
 
