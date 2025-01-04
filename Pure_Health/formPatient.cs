@@ -229,6 +229,13 @@ namespace Pure_Health
             
 
         }
+        private void UpdateRowNumbers()
+        {
+            for (int i = 0; i < dataGridView1.Rows.Count; i++)
+            {
+                dataGridView1.Rows[i].Cells["RowNumber"].Value = (i + 1).ToString();
+            }
+        }
 
         private void button3_Click(object sender, EventArgs e)
         {
@@ -249,8 +256,15 @@ namespace Pure_Health
                     // Delete the record from the database
                     DeleteRecordFromDatabase(id);
 
+
+                    ReorganizeIDs();
+
+
+
                     // Refresh the DataGridView
                     LoadDataIntoDataGridView();
+
+
                 }
             }
             else
@@ -258,6 +272,7 @@ namespace Pure_Health
                 // No row selected
                 MessageBox.Show("Please select a row to delete.");
             }
+
         }
         private void DeleteRecordFromDatabase(int id)
         {
@@ -287,6 +302,52 @@ namespace Pure_Health
                 MessageBox.Show("An error occurred while deleting the record: " + ex.Message);
             }
         }
+        private void ReorganizeIDs()
+        {
+            string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
+
+            string reorganizeQuery = @"
+        BEGIN TRANSACTION;
+
+        -- Step 1: Create a temporary table with the same schema but without the IDENTITY property
+        SELECT ROW_NUMBER() OVER (ORDER BY Id) AS NewId, [Patient name], Address, [Contact no.], Age, [Test to conduct], Price, Birthdate, Gender, Referral
+        INTO #TempTable
+        FROM dbo.Table_1;
+
+        -- Step 2: Disable identity insert on the original table
+        SET IDENTITY_INSERT dbo.Table_1 ON;
+
+        -- Step 3: Truncate the original table
+        TRUNCATE TABLE dbo.Table_1;
+
+        -- Step 4: Insert the data back into the original table with sequential IDs
+        INSERT INTO dbo.Table_1 (Id, [Patient name], Address, [Contact no.], Age, [Test to conduct], Price, Birthdate, Gender, Referral)
+        SELECT NewId, [Patient name], Address, [Contact no.], Age, [Test to conduct], Price, Birthdate, Gender, Referral
+        FROM #TempTable;
+
+        -- Step 5: Drop the temporary table
+        DROP TABLE #TempTable;
+
+        -- Step 6: Reset the identity seed
+        DBCC CHECKIDENT ('dbo.Table_1', RESEED, 0);
+
+        -- Step 7: Re-enable identity insert
+        SET IDENTITY_INSERT dbo.Table_1 OFF;
+
+        COMMIT TRANSACTION;
+    ";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                using (SqlCommand command = new SqlCommand(reorganizeQuery, connection))
+                {
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
 
         private void button4_Click(object sender, EventArgs e)
         {
@@ -385,6 +446,8 @@ namespace Pure_Health
             }
         }
 
+
+        
 
     }
 
