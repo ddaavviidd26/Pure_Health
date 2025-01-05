@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,25 +13,84 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Pure_Health
 {
+   
     public partial class formPatient : Form
     {
 
         public formPatient()
         {
             InitializeComponent();
+            CustomizeSearchButton();
+            this.Paint += Form1_Paint;
+            this.Load += formPatient_Load;
             Anchor = AnchorStyles.Bottom | AnchorStyles.Right | AnchorStyles.Left;
             dataGridView1.DefaultCellStyle.ForeColor = Color.Black;
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridView1.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
             dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
 
+        }
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            // Define the radius for rounded corners
+            int radius = 15;
 
+            // Create a GraphicsPath to define the rounded corners
+            GraphicsPath path = new GraphicsPath();
 
+            // Add rounded corners to the path
+            path.AddArc(0, 0, radius, radius, 180, 90);  // Top-left corner
+            path.AddArc(dataGridView1.Width - radius - 1, 0, radius, radius, 270, 90);  // Top-right corner
+            path.AddArc(dataGridView1.Width - radius - 1, dataGridView1.Height - radius - 1, radius, radius, 0, 90);  // Bottom-right corner
+            path.AddArc(0, dataGridView1.Height - radius - 1, radius, radius, 90, 90);  // Bottom-left corner
+            path.CloseFigure();
 
+            // Apply the path as the region for the DataGridView (this gives it rounded corners)
+            dataGridView1.Region = new Region(path);
+        }
+
+        private void CustomizeDataGridView()
+        {
+
+            // General Appearance
+            dataGridView1.BackgroundColor = Color.FromArgb(242, 240, 230);
+            dataGridView1.BorderStyle = BorderStyle.None;
+            dataGridView1.GridColor = Color.FromArgb(202, 186, 153);
+            dataGridView1.EnableHeadersVisualStyles = false;
+
+            // Header Style
+            dataGridView1.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(104, 141, 94);
+            dataGridView1.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dataGridView1.ColumnHeadersDefaultCellStyle.Font = new Font("Cambria", 13, FontStyle.Bold);
+            dataGridView1.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridView1.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            dataGridView1.ColumnHeadersHeight = 50;
+
+            // Cell Style
+            dataGridView1.DefaultCellStyle.BackColor = Color.FromArgb(231, 224, 202);
+            dataGridView1.DefaultCellStyle.ForeColor = Color.FromArgb(74, 54, 35);
+            dataGridView1.DefaultCellStyle.Font = new Font("Cambria", 12);
+            dataGridView1.DefaultCellStyle.SelectionBackColor = Color.FromArgb(181, 201, 143);
+            dataGridView1.DefaultCellStyle.SelectionForeColor = Color.White;
+            dataGridView1.DefaultCellStyle.Padding = new Padding(5);
+
+            // Alternating Rows
+            dataGridView1.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(219, 212, 190);
+
+            // Row Template
+            dataGridView1.RowTemplate.Height = 35;
+            dataGridView1.RowHeadersVisible = false;
+            dataGridView1.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+
+            // Column Behavior
+            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dataGridView1.MultiSelect = false;
         }
 
         private void formPatient_Load(object sender, EventArgs e)
         {
+            CustomizeDataGridView();
             this.ControlBox = false;
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
             string query = "SELECT * FROM dbo.Table_1";
@@ -225,8 +285,8 @@ namespace Pure_Health
 
         private void dataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            
-            
+
+
 
         }
         private void UpdateRowNumbers()
@@ -445,10 +505,92 @@ namespace Pure_Health
                 MessageBox.Show("An error occurred while updating the record: " + ex.Message);
             }
         }
+        private void CustomizeSearchButton()
+        {
+            // Set button properties
+            btnSearch.Text = "Search";
+            btnSearch.Font = new Font("Cambria", 14, FontStyle.Bold);
+            btnSearch.ForeColor = Color.White;
+            btnSearch.BackColor = Color.FromArgb(104, 141, 94); // Modern green color
+            btnSearch.FlatStyle = FlatStyle.Flat;
+            btnSearch.FlatAppearance.BorderSize = 0; // Remove border
+            btnSearch.FlatAppearance.MouseOverBackColor = Color.FromArgb(81, 111, 72); // Darker green on hover
+            btnSearch.FlatAppearance.MouseDownBackColor = Color.FromArgb(60, 85, 55); // Even darker green on click
+            btnSearch.Size = new Size(100, 40); // Set button size
+            btnSearch.Cursor = Cursors.Hand; // Hand cursor on hover
 
+            txtSearch.BorderStyle = BorderStyle.None; // Remove default border
+            txtSearch.Font = new Font("Cambria", 16, FontStyle.Regular);
+            txtSearch.ForeColor = Color.FromArgb(74, 54, 35); // Light brown color for text
+            txtSearch.BackColor = Color.FromArgb(231, 224, 202); // Soft beige background
+            txtSearch.Size = new Size(150, 35); // Set size of the text box
+            txtSearch.Padding = new Padding(10, 5, 10, 5); // Padding to give it a modern feel
+            txtSearch.Cursor = Cursors.IBeam; // Text cursor when typing
+            txtSearch.TextAlign = HorizontalAlignment.Left; // Text alignment
+            txtSearch.MaxLength = 60; // Set a maximum character limit
+        }
 
-        
+        private void button5_Click(object sender, EventArgs e)
+        {
+            string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
+            string searchTerm = txtSearch.Text.Trim();
 
+            if (string.IsNullOrEmpty(searchTerm))
+            {
+                (dataGridView1.DataSource as DataTable).DefaultView.RowFilter = string.Empty;
+                MessageBox.Show("Please enter a search term.", "Input Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                
+            }else
+            {
+                (dataGridView1.DataSource as DataTable).DefaultView.RowFilter =
+            string.Format("[Patient name] LIKE '%{0}%' OR Address LIKE '%{0}%' OR Gender LIKE '%{0}%'",
+            searchTerm);
+            }
+
+            string query = "SELECT * FROM dbo.Table_1  WHERE 1=1"; // Start with a base condition
+
+            // Check if the search term is numeric (ID search)
+            if (int.TryParse(searchTerm, out int id))
+            {
+                query += " AND ID = @ID"; // Search by ID
+            }
+            else
+            {
+                query += " AND ([Patient name] LIKE @SearchTerm OR Address LIKE @SearchTerm OR Gender LIKE @SearchTerm)"; // Search by Name, Address, or Gender
+            }
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    // Add parameters
+                    cmd.Parameters.AddWithValue("@SearchTerm", "%" + searchTerm + "%"); // Search term for Name, Address, and Gender
+
+                    // If the search term is numeric, add it for ID
+                    if (query.Contains("ID"))
+                    {
+                        cmd.Parameters.AddWithValue("@ID", searchTerm); // Use the numeric search term for ID
+                    }
+
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                    DataTable dt = new DataTable();
+                    adapter.Fill(dt);
+
+                    dataGridView1.DataSource = dt;
+
+                    if (dt.Rows.Count == 0)
+                    {
+                        MessageBox.Show("No records found matching the search criteria.", "Search Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+            }
+
+        }
+
+        private void txtSearch_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 
 }
