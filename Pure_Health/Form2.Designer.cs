@@ -48,8 +48,6 @@
             this.btnScheduling = new System.Windows.Forms.Button();
             this.panel4 = new System.Windows.Forms.Panel();
             this.btnAccounting = new System.Windows.Forms.Button();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.btnAudittrails = new System.Windows.Forms.Button();
             this.panel11 = new System.Windows.Forms.Panel();
             this.btnReports = new System.Windows.Forms.Button();
             this.panel5 = new System.Windows.Forms.Panel();
@@ -68,7 +66,6 @@
             this.panel8.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panel4.SuspendLayout();
-            this.panel2.SuspendLayout();
             this.panel11.SuspendLayout();
             this.panel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
@@ -115,7 +112,6 @@
             this.sidebar.Controls.Add(this.menuContainer);
             this.sidebar.Controls.Add(this.panel3);
             this.sidebar.Controls.Add(this.panel4);
-            this.sidebar.Controls.Add(this.panel2);
             this.sidebar.Controls.Add(this.panel11);
             this.sidebar.Controls.Add(this.panel5);
             this.sidebar.Dock = System.Windows.Forms.DockStyle.Left;
@@ -300,33 +296,10 @@
             this.btnAccounting.UseVisualStyleBackColor = false;
             this.btnAccounting.Click += new System.EventHandler(this.btnAccounting_Click);
             // 
-            // panel2
-            // 
-            this.panel2.Controls.Add(this.btnAudittrails);
-            this.panel2.Location = new System.Drawing.Point(3, 265);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(277, 52);
-            this.panel2.TabIndex = 6;
-            // 
-            // btnAudittrails
-            // 
-            this.btnAudittrails.BackColor = System.Drawing.Color.Green;
-            this.btnAudittrails.Font = new System.Drawing.Font("Cambria", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnAudittrails.Image = global::Pure_Health.Properties.Resources.valuation;
-            this.btnAudittrails.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnAudittrails.Location = new System.Drawing.Point(-13, -21);
-            this.btnAudittrails.Name = "btnAudittrails";
-            this.btnAudittrails.Padding = new System.Windows.Forms.Padding(25, 0, 0, 0);
-            this.btnAudittrails.Size = new System.Drawing.Size(296, 99);
-            this.btnAudittrails.TabIndex = 4;
-            this.btnAudittrails.Text = "Audit Trails";
-            this.btnAudittrails.UseVisualStyleBackColor = false;
-            this.btnAudittrails.Click += new System.EventHandler(this.btnAudittrails_Click);
-            // 
             // panel11
             // 
             this.panel11.Controls.Add(this.btnReports);
-            this.panel11.Location = new System.Drawing.Point(3, 323);
+            this.panel11.Location = new System.Drawing.Point(3, 265);
             this.panel11.Name = "panel11";
             this.panel11.Size = new System.Drawing.Size(280, 52);
             this.panel11.TabIndex = 6;
@@ -349,7 +322,7 @@
             // panel5
             // 
             this.panel5.Controls.Add(this.btnLogout);
-            this.panel5.Location = new System.Drawing.Point(3, 381);
+            this.panel5.Location = new System.Drawing.Point(3, 323);
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(277, 52);
             this.panel5.TabIndex = 7;
@@ -406,7 +379,6 @@
             this.panel8.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             this.panel4.ResumeLayout(false);
-            this.panel2.ResumeLayout(false);
             this.panel11.ResumeLayout(false);
             this.panel5.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
@@ -435,8 +407,6 @@
         private System.Windows.Forms.Panel panel10;
         private System.Windows.Forms.Button btnEmployee;
         private System.Windows.Forms.Panel panel6;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Button btnAudittrails;
         private System.Windows.Forms.Panel panel11;
         private System.Windows.Forms.Button btnReports;
         private System.Windows.Forms.Timer menutransition;
