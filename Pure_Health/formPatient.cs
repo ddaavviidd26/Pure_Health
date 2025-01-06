@@ -60,7 +60,7 @@ namespace Pure_Health
 
             // Header Style
             dataGridView1.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(104, 141, 94);
-            dataGridView1.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dataGridView1.ColumnHeadersDefaultCellStyle.ForeColor = Color.Black;
             dataGridView1.ColumnHeadersDefaultCellStyle.Font = new Font("Cambria", 13, FontStyle.Bold);
             dataGridView1.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dataGridView1.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
@@ -71,7 +71,7 @@ namespace Pure_Health
             dataGridView1.DefaultCellStyle.ForeColor = Color.FromArgb(74, 54, 35);
             dataGridView1.DefaultCellStyle.Font = new Font("Cambria", 12);
             dataGridView1.DefaultCellStyle.SelectionBackColor = Color.FromArgb(181, 201, 143);
-            dataGridView1.DefaultCellStyle.SelectionForeColor = Color.White;
+            dataGridView1.DefaultCellStyle.SelectionForeColor = Color.Black;
             dataGridView1.DefaultCellStyle.Padding = new Padding(5);
 
             // Alternating Rows
@@ -87,7 +87,7 @@ namespace Pure_Health
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView1.MultiSelect = false;
         }
-
+        
         private void formPatient_Load(object sender, EventArgs e)
         {
             CustomizeDataGridView();
