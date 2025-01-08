@@ -146,8 +146,8 @@ namespace Pure_Health
         {
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
             string query = @"
-        INSERT INTO dbo.Table_1 ([Patient name], Address,[Contact no.], Age, [Test to conduct], Price, Birthdate, Gender, Referral) 
-        VALUES (@Text1, @Text2, @Text3, @Text4, @Text5, @Text6, @DateValue, @Combo1, @Combo2)";
+        INSERT INTO dbo.Table_1 ([Patient name], Address,[Contact no.], Age, [Test to conduct], Price, Birthdate,[Date today], Gender, Referral) 
+        VALUES (@Text1, @Text2, @Text3, @Text4, @Text5, @Text6, @DateValue, @DateValue1 ,@Combo1, @Combo2)";
             try
             {
                 // Gather input from TextBoxes
@@ -160,6 +160,7 @@ namespace Pure_Health
 
                 // Get value from DateTimePicker
                 DateTime dateValue = dateTimePicker1.Value;
+                DateTime dateValue1 = dateTimePicker1.Value;
 
                 // Gather input from ComboBoxes
                 string combo1 = comboBox1.SelectedItem?.ToString() ?? "";
@@ -189,6 +190,7 @@ namespace Pure_Health
                         command.Parameters.AddWithValue("@Text5", text5);
                         command.Parameters.AddWithValue("@Text6", text6);
                         command.Parameters.AddWithValue("@DateValue", dateValue);
+                        command.Parameters.AddWithValue("@DateValue1", dateValue);
                         command.Parameters.AddWithValue("@Combo1", combo1);
                         command.Parameters.AddWithValue("@Combo2", combo2);
 
@@ -263,6 +265,7 @@ namespace Pure_Health
 
             // Reset DateTimePicker
             dateTimePicker1.Value = DateTime.Now;
+            dateTimePicker2.Value = DateTime.Now;
 
             // Reset ComboBoxes
             comboBox1.SelectedIndex = -1; // Deselect any selected item
@@ -296,7 +299,6 @@ namespace Pure_Health
                 dataGridView1.Rows[i].Cells["RowNumber"].Value = (i + 1).ToString();
             }
         }
-
         private void button3_Click(object sender, EventArgs e)
         {
             // Check if any row is selected
@@ -370,7 +372,7 @@ namespace Pure_Health
         BEGIN TRANSACTION;
 
         -- Step 1: Create a temporary table with the same schema but without the IDENTITY property
-        SELECT ROW_NUMBER() OVER (ORDER BY Id) AS NewId, [Patient name], Address, [Contact no.], Age, [Test to conduct], Price, Birthdate, Gender, Referral
+        SELECT ROW_NUMBER() OVER (ORDER BY Id) AS NewId, [Patient name], Address, [Contact no.], Age, [Test to conduct], Price, Birthdate,[Date today], Gender, Referral
         INTO #TempTable
         FROM dbo.Table_1;
 
@@ -381,8 +383,8 @@ namespace Pure_Health
         TRUNCATE TABLE dbo.Table_1;
 
         -- Step 4: Insert the data back into the original table with sequential IDs
-        INSERT INTO dbo.Table_1 (Id, [Patient name], Address, [Contact no.], Age, [Test to conduct], Price, Birthdate, Gender, Referral)
-        SELECT NewId, [Patient name], Address, [Contact no.], Age, [Test to conduct], Price, Birthdate, Gender, Referral
+        INSERT INTO dbo.Table_1 (Id, [Patient name], Address, [Contact no.], Age, [Test to conduct], Price, Birthdate,[Date today], Gender, Referral)
+        SELECT NewId, [Patient name], Address, [Contact no.], Age, [Test to conduct], Price, Birthdate,[Date today], Gender, Referral
         FROM #TempTable;
 
         -- Step 5: Drop the temporary table
@@ -422,6 +424,7 @@ namespace Pure_Health
                 textBox5.Text = dataGridView1.SelectedRows[0].Cells["Test to conduct"].Value.ToString();
                 label12.Text = dataGridView1.SelectedRows[0].Cells["Price"].Value.ToString();
                 dateTimePicker1.Value = Convert.ToDateTime(dataGridView1.SelectedRows[0].Cells["Birthdate"].Value);
+                dateTimePicker2.Value = Convert.ToDateTime(dataGridView1.SelectedRows[0].Cells["Date today"].Value);
                 comboBox1.SelectedItem = dataGridView1.SelectedRows[0].Cells["Gender"].Value.ToString();
                 comboBox2.SelectedItem = dataGridView1.SelectedRows[0].Cells["Referral"].Value.ToString();
 
@@ -442,6 +445,7 @@ namespace Pure_Health
             string testToConduct = textBox5.Text;
             decimal price = decimal.Parse(label12.Text);
             DateTime birthdate = dateTimePicker1.Value;
+            DateTime Datetoday = dateTimePicker2.Value;
             string gender = comboBox1.SelectedItem?.ToString();
             string referral = comboBox2.SelectedItem?.ToString();
 
@@ -453,18 +457,18 @@ namespace Pure_Health
             }
 
             // Update the record in the database
-            UpdateRecordInDatabase(name, address, contactNo, age, testToConduct, price, birthdate, gender, referral);
+            UpdateRecordInDatabase(name, address, contactNo, age, testToConduct, price, birthdate,Datetoday, gender, referral);
 
             // Refresh the DataGridView
             LoadDataIntoDataGridView();
         }
-        private void UpdateRecordInDatabase(string name, string address, string contactNo, int age, string testToConduct, decimal price, DateTime birthdate, string gender, string referral)
+        private void UpdateRecordInDatabase(string name, string address, string contactNo, int age, string testToConduct, decimal price, DateTime birthdate, DateTime datetoday, string gender, string referral)
         {
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
             string query = @"
         UPDATE dbo.Table_1 
         SET Address = @Address, [Contact no.] = @ContactNo, Age = @Age, [Test to conduct] = @TestToConduct, 
-            Price = @Price, Birthdate = @Birthdate, Gender = @Gender, Referral = @Referral
+            Price = @Price, Birthdate = @Birthdate, [Date today] = @Datetoday, Gender = @Gender, Referral = @Referral
         WHERE [Patient name] = @Name";
 
             try
@@ -481,6 +485,7 @@ namespace Pure_Health
                         command.Parameters.AddWithValue("@TestToConduct", testToConduct);
                         command.Parameters.AddWithValue("@Price", price);
                         command.Parameters.AddWithValue("@Birthdate", birthdate);
+                        command.Parameters.AddWithValue("@Datetoday", datetoday);
                         command.Parameters.AddWithValue("@Gender", gender);
                         command.Parameters.AddWithValue("@Referral", referral);
 
@@ -523,7 +528,7 @@ namespace Pure_Health
             txtSearch.Font = new Font("Cambria", 16, FontStyle.Regular);
             txtSearch.ForeColor = Color.FromArgb(74, 54, 35); // Light brown color for text
             txtSearch.BackColor = Color.FromArgb(231, 224, 202); // Soft beige background
-            txtSearch.Size = new Size(150, 35); // Set size of the text box
+            txtSearch.Size = new Size(100, 35); // Set size of the text box
             txtSearch.Padding = new Padding(10, 5, 10, 5); // Padding to give it a modern feel
             txtSearch.Cursor = Cursors.IBeam; // Text cursor when typing
             txtSearch.TextAlign = HorizontalAlignment.Left; // Text alignment
@@ -556,7 +561,7 @@ namespace Pure_Health
             }
             else
             {
-                query += " AND ([Patient name] LIKE @SearchTerm OR Address LIKE @SearchTerm OR Gender LIKE @SearchTerm)"; // Search by Name, Address, or Gender
+                query += " AND ([Patient name] LIKE @SearchTerm OR Address LIKE @SearchTerm OR Gender LIKE @SearchTerm) OR [Date today] LIKE @SearchTerm"; // Search by Name, Address, or Gender
             }
 
             using (SqlConnection conn = new SqlConnection(connectionString))

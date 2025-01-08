@@ -53,7 +53,7 @@ namespace Pure_Health
             txtSearch.Font = new Font("Cambria", 16, FontStyle.Regular);
             txtSearch.ForeColor = Color.FromArgb(74, 54, 35); // Light brown color for text
             txtSearch.BackColor = Color.FromArgb(231, 224, 202); // Soft beige background
-            txtSearch.Size = new Size(150, 35); // Set size of the text box
+            txtSearch.Size = new Size(100, 35); // Set size of the text box
             txtSearch.Padding = new Padding(10, 5, 10, 5); // Padding to give it a modern feel
             txtSearch.Cursor = Cursors.IBeam; // Text cursor when typing
             txtSearch.TextAlign = HorizontalAlignment.Left; // Text alignment
@@ -342,6 +342,11 @@ namespace Pure_Health
                     command.ExecuteNonQuery();
                 }
             }
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
     }
 }

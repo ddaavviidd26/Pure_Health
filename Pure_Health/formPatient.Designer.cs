@@ -57,6 +57,8 @@
             this.label13 = new System.Windows.Forms.Label();
             this.btnSearch = new System.Windows.Forms.Button();
             this.txtSearch = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.dateTimePicker2 = new System.Windows.Forms.DateTimePicker();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -74,7 +76,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(179, 265);
+            this.label2.Location = new System.Drawing.Point(131, 264);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(0, 13);
             this.label2.TabIndex = 2;
@@ -273,7 +275,48 @@
             this.comboBox2.Font = new System.Drawing.Font("Cambria", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.comboBox2.FormattingEnabled = true;
             this.comboBox2.Items.AddRange(new object[] {
-            "Dr. Rubio"});
+            "DR. EVANGELINE RUBIO",
+            "DR. TUATIS",
+            "DR. MAURICIO",
+            "DR. OLIVARES",
+            "GEN. VILLMARZO/FVR",
+            "WILNELIA RUIZ/PO3 2 H.C",
+            "SARAH BRONOLA/PULLIDO H.C",
+            "DR. DALIVA",
+            "LERMA CASTILLO",
+            "JENNIFER VIRATA/TBDOTS",
+            "SUSAN SUPALANAS/ MALIA HC",
+            "DR. CASALJAY",
+            "MJ MANANSALA/SALUD HC",
+            "DR. ALCASID/MEDICARE",
+            "TERESITA BORAMO / VIRATA H.C",
+            "DR. MOLETA",
+            "JOVY NARAG/POB S. H.C",
+            "ANNE ESTILONG/POBLACION 3 H.C",
+            "MARY JOY ESTEBAN / POB 4 H.C",
+            "DR. KEVIN PUA",
+            "CARSIGMA",
+            "JEMS/CITYHALL",
+            "LORNA PADILLA / MEMIJE H.C",
+            "JAVIER, EMMALYN",
+            "CARMEL MATING/AGAPE LYING-IN",
+            "LARON, RAQUEL",
+            "ARIANE BOLONGON / BOLONGON LYING-IN",
+            "BIVERLY LIMBO/CALIMAG H.C",
+            "PADUA, AMALIA/POB 1",
+            "DELAS ALAS HC/ MARILOU ENCARNACION",
+            "DR. NIETO",
+            "DR. POLLI KATHERINE PAULO / POLLICARE",
+            "JOCELYN DELA CUEVA",
+            "CYNTHIA AQUINO/MEDICARE",
+            "DR. MEL SIMON",
+            "DR. NICANOR SALAZAR / DISTRICT DOCTOR ESPARAS. THERESA",
+            "JOSEPHINE LASAC/JOSEPHINE LYING-IN",
+            "TEL-E, JULIET/ RAMON CRUZ H.C",
+            "ESTELLA LYING-IN/BRGY. VIRATA",
+            "LORNA MANUEL/SANITATION",
+            "ELISA CONCEPCION/ELISA CONCEPCION LYING-IN",
+            "EARIST"});
             this.comboBox2.Location = new System.Drawing.Point(460, 262);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(114, 23);
@@ -373,7 +416,7 @@
             this.btnSearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSearch.Font = new System.Drawing.Font("Cambria", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSearch.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.btnSearch.Location = new System.Drawing.Point(65, 254);
+            this.btnSearch.Location = new System.Drawing.Point(17, 253);
             this.btnSearch.Name = "btnSearch";
             this.btnSearch.Size = new System.Drawing.Size(61, 43);
             this.btnSearch.TabIndex = 27;
@@ -384,11 +427,30 @@
             // txtSearch
             // 
             this.txtSearch.Font = new System.Drawing.Font("Cambria", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtSearch.Location = new System.Drawing.Point(182, 257);
+            this.txtSearch.Location = new System.Drawing.Point(134, 256);
             this.txtSearch.Name = "txtSearch";
             this.txtSearch.Size = new System.Drawing.Size(100, 32);
             this.txtSearch.TabIndex = 28;
             this.txtSearch.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Cambria", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label14.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.label14.Location = new System.Drawing.Point(280, 228);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(129, 28);
+            this.label14.TabIndex = 29;
+            this.label14.Text = "Date today:";
+            // 
+            // dateTimePicker2
+            // 
+            this.dateTimePicker2.Font = new System.Drawing.Font("Cambria", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.dateTimePicker2.Location = new System.Drawing.Point(285, 262);
+            this.dateTimePicker2.Name = "dateTimePicker2";
+            this.dateTimePicker2.Size = new System.Drawing.Size(122, 26);
+            this.dateTimePicker2.TabIndex = 30;
             // 
             // formPatient
             // 
@@ -396,6 +458,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(1025, 743);
+            this.Controls.Add(this.dateTimePicker2);
+            this.Controls.Add(this.label14);
             this.Controls.Add(this.txtSearch);
             this.Controls.Add(this.btnSearch);
             this.Controls.Add(this.label13);
@@ -464,5 +528,7 @@
         private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.TextBox txtSearch;
         private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.DateTimePicker dateTimePicker2;
     }
 }

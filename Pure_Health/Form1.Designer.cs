@@ -59,6 +59,7 @@
             this.label1.Size = new System.Drawing.Size(182, 37);
             this.label1.TabIndex = 1;
             this.label1.Text = "Purehealth";
+            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // panel1
             // 
