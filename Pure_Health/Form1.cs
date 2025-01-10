@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -41,16 +42,28 @@ namespace Pure_Health
 
         private void button1_Click(object sender, EventArgs e)
         {
-            
-            Form3 form3 = new Form3();        
-            form3.Show();
-            this.Hide();
-           
+
+            string username = Username.Text;
+            string password = Password.Text;
+
+            if (AuthenticateUser(username, password))
+            {
+                MessageBox.Show("Login successful!");
+                // Navigate to the next form or dashboard
+                Form3 form3 = new Form3();
+                form3.Show();
+                this.Hide();
+            }
+            else
+            {
+                MessageBox.Show("Invalid username or password.");
+            }
+
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            
         }
 
         private void Username_TextChanged(object sender, EventArgs e)
@@ -62,5 +75,24 @@ namespace Pure_Health
         {
 
         }
+        public bool AuthenticateUser(string username, string password)
+        {
+            string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
+            string hashedPassword = "purehealth";
+
+            string query = "SELECT COUNT(1) FROM dbo.Table_3 WHERE [Employees name] = @Username";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = new SqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@Username", username);
+                command.Parameters.AddWithValue("@PasswordHash", hashedPassword);
+
+                connection.Open();
+                int result = Convert.ToInt32(command.ExecuteScalar());
+                return result == 1;
+            }
+        }
+
     }
 }
