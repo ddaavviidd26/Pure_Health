@@ -46,7 +46,7 @@ namespace Pure_Health
             string username = Username.Text;
             string password = Password.Text;
 
-            if (AuthenticateUser(username, password))
+            if (AuthenticateUser(username) && password == "purehealth" )
             {
                 MessageBox.Show("Login successful!");
                 // Navigate to the next form or dashboard
@@ -75,10 +75,9 @@ namespace Pure_Health
         {
 
         }
-        public bool AuthenticateUser(string username, string password)
+        public bool AuthenticateUser(string username)
         {
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
-            string hashedPassword = "purehealth";
 
             string query = "SELECT COUNT(1) FROM dbo.Table_3 WHERE [Employees name] = @Username";
 
@@ -86,11 +85,18 @@ namespace Pure_Health
             using (SqlCommand command = new SqlCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@Username", username);
-                command.Parameters.AddWithValue("@PasswordHash", hashedPassword);
 
-                connection.Open();
-                int result = Convert.ToInt32(command.ExecuteScalar());
-                return result == 1;
+                try
+                {
+                    connection.Open();
+                    int result = Convert.ToInt32(command.ExecuteScalar());
+                    return result == 1;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Database error: {ex.Message}");
+                    return false;
+                }
             }
         }
 
