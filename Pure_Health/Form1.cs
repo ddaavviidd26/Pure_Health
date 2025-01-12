@@ -42,24 +42,38 @@ namespace Pure_Health
 
         private void button1_Click(object sender, EventArgs e)
         {
+            string username = Username.Text.Trim(); // Trim to remove leading/trailing whitespace
+            string password = Password.Text.Trim(); // Trim to remove leading/trailing whitespace
 
-            string username = Username.Text;
-            string password = Password.Text;
-
-            if (AuthenticateUser(username) && password == "purehealth" )
+            // Check if either TextBox is empty
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
-                MessageBox.Show("Login successful!");
-                // Navigate to the next form or dashboard
-                Form3 form3 = new Form3();
-                form3.Show();
-                this.Hide();
+                MessageBox.Show("Both Username and Password are required.", "Input Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return; // Stop further execution
+
+            }
+           
+                // Proceed with authentication  
+            if (AuthenticateUser(username, out string specialization) && password == "purehealth")
+            {
+                if (!string.IsNullOrEmpty(specialization) && specialization.Equals("frontdesk", StringComparison.OrdinalIgnoreCase))
+                {
+                    MessageBox.Show("Login successful!");
+                    Form3 form3 = new Form3();
+                    form3.Show();
+                    this.Hide();
+                }
+                else
+                {
+                    MessageBox.Show("Access denied. Only frontdesk users can log in.");
+                }
             }
             else
             {
                 MessageBox.Show("Invalid username or password.");
             }
-
         }
+
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -75,11 +89,12 @@ namespace Pure_Health
         {
 
         }
-        public bool AuthenticateUser(string username)
+        public bool AuthenticateUser(string username, out string specialization)
         {
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
+            string query = "SELECT Specialization FROM dbo.Table_3 WHERE [Employees name] = @Username";
 
-            string query = "SELECT COUNT(1) FROM dbo.Table_3 WHERE [Employees name] = @Username";
+            specialization = null; // Initialize specialization
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             using (SqlCommand command = new SqlCommand(query, connection))
@@ -89,8 +104,17 @@ namespace Pure_Health
                 try
                 {
                     connection.Open();
-                    int result = Convert.ToInt32(command.ExecuteScalar());
-                    return result == 1;
+                    object result = command.ExecuteScalar(); // Get the specialization value
+
+                    if (result != null && result != DBNull.Value)
+                    {
+                        specialization = result.ToString(); // Assign the specialization
+                        return true; // Username found
+                    }
+                    else
+                    {
+                        return false; // Username not found
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -100,5 +124,19 @@ namespace Pure_Health
             }
         }
 
+        private void password(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Password_MouseLeave_1(object sender, EventArgs e)
+        {
+            Password.PasswordChar = '●'; // Hide the password
+        }
+
+        private void Password_MouseEnter(object sender, EventArgs e)
+        {
+            Password.PasswordChar = '\0'; // Reveal the password
+        }
     }
 }

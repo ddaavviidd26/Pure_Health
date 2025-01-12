@@ -133,6 +133,8 @@
             this.Password.Name = "Password";
             this.Password.Size = new System.Drawing.Size(205, 24);
             this.Password.TabIndex = 8;
+            this.Password.MouseEnter += new System.EventHandler(this.Password_MouseEnter);
+            this.Password.MouseLeave += new System.EventHandler(this.Password_MouseLeave_1);
             // 
             // label3
             // 
