@@ -42,6 +42,7 @@ namespace Pure_Health
 
         private void button1_Click(object sender, EventArgs e)
         {
+
             string username = Username.Text.Trim(); // Trim to remove leading/trailing whitespace
             string password = Password.Text.Trim(); // Trim to remove leading/trailing whitespace
 
@@ -92,7 +93,7 @@ namespace Pure_Health
         public bool AuthenticateUser(string username, out string specialization)
         {
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
-            string query = "SELECT Specialization FROM dbo.Table_3 WHERE [Employees name] = @Username";
+            string query = "SELECT Specialization FROM dbo.Table_3 WHERE UniqueID = @Username";
 
             specialization = null; // Initialize specialization
 

@@ -155,12 +155,13 @@ namespace Pure_Health
 
         }
 
+ 
         private void button5_Click(object sender, EventArgs e)
         {
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
             string query = @"
-        INSERT INTO dbo.Table_3 ([Employees name], Address, Age,[Contact no.],  Gender ,Specialization ,Birthdate) 
-        VALUES (@Text1, @Text2, @Text3, @Text4, @Combo1, @Combo2 ,@DateValue)";
+        INSERT INTO dbo.Table_3 ([Employees name], Address, Age, [Contact no.], Gender, Specialization, Birthdate, UniqueID) 
+        VALUES (@Text1, @Text2, @Text3, @Text4, @Combo1, @Combo2, @DateValue, @UniqueID)";
             try
             {
                 // Gather input from TextBoxes
@@ -168,8 +169,6 @@ namespace Pure_Health
                 string text2 = textBox2.Text;
                 string text3 = textBox3.Text;
                 string text4 = textBox4.Text;
-                
-                
 
                 // Get value from DateTimePicker
                 DateTime dateValue = dateTimePicker1.Value;
@@ -178,12 +177,20 @@ namespace Pure_Health
                 string combo1 = comboBox1.SelectedItem?.ToString() ?? "";
                 string combo2 = comboBox2.SelectedItem?.ToString() ?? "";
 
-                // Validation (optional)
-                if (string.IsNullOrWhiteSpace(text1) || string.IsNullOrWhiteSpace(combo1))
+                // Validation: Check if all fields are filled
+                if (string.IsNullOrWhiteSpace(text1) || string.IsNullOrWhiteSpace(text2) ||
+                    string.IsNullOrWhiteSpace(text3) || string.IsNullOrWhiteSpace(text4) ||
+                    string.IsNullOrWhiteSpace(combo1) || string.IsNullOrWhiteSpace(combo2))
                 {
                     MessageBox.Show("Please fill in all required fields.");
                     return;
                 }
+
+                // Generate a unique ID
+                string uniqueID = GenerateUniqueID();
+
+                // Display the unique ID in the Label
+                label11.Text = $"{uniqueID}";
 
                 // Create a connection to SQL Server
                 using (SqlConnection connection = new SqlConnection(connectionString))
@@ -202,6 +209,7 @@ namespace Pure_Health
                         command.Parameters.AddWithValue("@DateValue", dateValue);
                         command.Parameters.AddWithValue("@Combo1", combo1);
                         command.Parameters.AddWithValue("@Combo2", combo2);
+                        command.Parameters.AddWithValue("@UniqueID", uniqueID);
 
                         // Execute the command
                         int rowsAffected = command.ExecuteNonQuery();
@@ -215,7 +223,6 @@ namespace Pure_Health
                             LoadDataIntoDataGridView();
 
                             ClearInputFields();
-
                         }
                         else
                         {
@@ -229,7 +236,57 @@ namespace Pure_Health
                 // Handle errors
                 MessageBox.Show("An error occurred: " + ex.Message);
             }
+        }
+        private void ReorganizeIDs()
+        {
+            string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
 
+            string reorganizeQuery = @"
+        BEGIN TRANSACTION;
+
+        -- Step 1: Create a temporary table with the same schema but without the IDENTITY property
+        SELECT ROW_NUMBER() OVER (ORDER BY Id) AS NewId, [Employees name], Address, Age, [Contact no.], Gender, Specialization, Birthdate, UniqueID
+        INTO #TempTable
+        FROM dbo.Table_3;
+
+        -- Step 2: Disable identity insert on the original table
+        SET IDENTITY_INSERT dbo.Table_3 ON;
+
+        -- Step 3: Truncate the original table
+        TRUNCATE TABLE dbo.Table_3;
+
+        -- Step 4: Insert the data back into the original table with sequential IDs
+        INSERT INTO dbo.Table_3 (Id,[Employees name], Address, Age, [Contact no.], Gender, Specialization, Birthdate, UniqueID)
+        SELECT NewId, [Employees name], Address, Age, [Contact no.], Gender, Specialization, Birthdate, UniqueID
+        FROM #TempTable;
+
+        -- Step 5: Drop the temporary table
+        DROP TABLE #TempTable;
+
+        -- Step 6: Reset the identity seed
+        DBCC CHECKIDENT ('dbo.Table_3', RESEED, 0);
+
+        -- Step 7: Re-enable identity insert
+        SET IDENTITY_INSERT dbo.Table_3 OFF;
+
+        COMMIT TRANSACTION;
+    ";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                using (SqlCommand command = new SqlCommand(reorganizeQuery, connection))
+                {
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+        private string GenerateUniqueID()
+        {
+            // Generate a unique ID using a timestamp and random number
+            string randomPart = new Random().Next(10000, 99999).ToString();
+            return $"{randomPart}";
         }
         private void LoadDataIntoDataGridView()
         {
@@ -298,15 +355,15 @@ namespace Pure_Health
                 {
                     // Delete the record from the database
                     DeleteRecordFromDatabase(id);
+                    
 
 
-                    ReorganizeIDs();
 
 
 
                     // Refresh the DataGridView
                     LoadDataIntoDataGridView();
-
+                    ReorganizeIDs();
 
                 }
             }
@@ -345,51 +402,7 @@ namespace Pure_Health
                 MessageBox.Show("An error occurred while deleting the record: " + ex.Message);
             }
         }
-        private void ReorganizeIDs()
-        {
-            string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
-
-            string reorganizeQuery = @"
-        BEGIN TRANSACTION;
-
-        -- Step 1: Create a temporary table with the same schema but without the IDENTITY property
-        SELECT ROW_NUMBER() OVER (ORDER BY ID) AS NewId, [Employees name], Address, Age,[Contact no.],  Gender ,Specialization ,Birthdate
-        INTO #TempTable
-        FROM dbo.Table_3;
-
-        -- Step 2: Disable identity insert on the original table
-        SET IDENTITY_INSERT dbo.Table_3 ON;
-
-        -- Step 3: Truncate the original table
-        TRUNCATE TABLE dbo.Table_3;
-
-        -- Step 4: Insert the data back into the original table with sequential IDs
-        INSERT INTO dbo.Table_3 (ID, [Employees name], Address, Age,[Contact no.],  Gender ,Specialization ,Birthdate)
-        SELECT NewId, [Employees name], Address, Age,[Contact no.],  Gender ,Specialization ,Birthdate
-        FROM #TempTable;
-
-        -- Step 5: Drop the temporary table
-        DROP TABLE #TempTable;
-
-        -- Step 6: Reset the identity seed
-        DBCC CHECKIDENT ('dbo.Table_3', RESEED, 0);
-
-        -- Step 7: Re-enable identity insert
-        SET IDENTITY_INSERT dbo.Table_3 OFF;
-
-        COMMIT TRANSACTION;
-    ";
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
-
-                using (SqlCommand command = new SqlCommand(reorganizeQuery, connection))
-                {
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
+            
 
         private void button4_Click(object sender, EventArgs e)
         {
@@ -404,6 +417,7 @@ namespace Pure_Health
                 dateTimePicker1.Value = Convert.ToDateTime(dataGridView1.SelectedRows[0].Cells["Birthdate"].Value);
                 comboBox1.SelectedItem = dataGridView1.SelectedRows[0].Cells["Gender"].Value.ToString();
                 comboBox2.SelectedItem = dataGridView1.SelectedRows[0].Cells["Specialization"].Value.ToString();
+                label11.Text = dataGridView1.SelectedRows[0].Cells["UniqueID"].Value.ToString();
 
                 MessageBox.Show("Data loaded for editing.");
             }
