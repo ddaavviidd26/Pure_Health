@@ -156,8 +156,20 @@ namespace Pure_Health
                 string text3 = textBox3.Text;
                 string text4 = textBox4.Text;
                 string text5 = textBox5.Text;
+                
                 string text6 = label12.Text;
+                int priceValue;
 
+                if (int.TryParse(text6, out priceValue))
+                {
+                    // Successfully converted text6 to an integer
+                }
+                else
+                {
+                    // Handle the error case when the conversion fails
+                    MessageBox.Show("Invalid price entered. Please enter a valid number for the price.");
+                    return; // Exit the method if price conversion fails
+                }
                 // Get value from DateTimePicker
                 DateTime dateValue = dateTimePicker1.Value;
                 DateTime dateValue1 = dateTimePicker1.Value;
@@ -188,7 +200,7 @@ namespace Pure_Health
                         command.Parameters.AddWithValue("@Text3", text3);
                         command.Parameters.AddWithValue("@Text4", text4);
                         command.Parameters.AddWithValue("@Text5", text5);
-                        command.Parameters.AddWithValue("@Text6", text6);
+                        command.Parameters.AddWithValue("@Text6", priceValue);
                         command.Parameters.AddWithValue("@DateValue", dateValue);
                         command.Parameters.AddWithValue("@DateValue1", dateValue);
                         command.Parameters.AddWithValue("@Combo1", combo1);
@@ -214,11 +226,21 @@ namespace Pure_Health
                         }
                     }
                 }
+                UpdateGrossInForm2();
             }
             catch (Exception ex)
             {
                 // Handle errors
                 MessageBox.Show("An error occurred: " + ex.Message);
+            }
+        }
+        public void UpdateGrossInForm2()
+        {
+            
+            formReports formReports = Application.OpenForms.OfType<formReports>().FirstOrDefault();
+            if (formReports != null)
+            {
+                formReports.RefreshGross(DateTime.Now.Date, decimal.Parse(label12.Text));
             }
         }
 
@@ -596,6 +618,10 @@ namespace Pure_Health
         {
 
         }
+
+
+       
+
     }
 
 }
