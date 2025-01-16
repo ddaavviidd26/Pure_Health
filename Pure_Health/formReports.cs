@@ -72,7 +72,7 @@ namespace Pure_Health
         private void CustomizeDataGridView()
         {
 
-            // General Appearance
+            // General Appearance sda
             dataGridView1.BackgroundColor = Color.FromArgb(242, 240, 230);
             dataGridView1.BorderStyle = BorderStyle.None;
             dataGridView1.GridColor = Color.FromArgb(202, 186, 153);
