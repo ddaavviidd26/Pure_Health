@@ -136,18 +136,25 @@ namespace Pure_Health
                 if (popup.ShowDialog() == DialogResult.OK)
                 {
 
-                    label12.Text = $"{popup.TotalPrice:C}";
+                    textBox6.Text = $"{popup.TotalPrice:C}";
                     textBox5.Text = string.Join(Environment.NewLine, popup.SelectedItems);
                 }
             }
+        }
+        public void UpdateSummary(List<string> selectedItems, int totalPrice)
+        {
+            // Update a TextBox with the selected items and total price
+            textBox6.Text = string.Join(", ", selectedItems);
+            textBox5.Text = totalPrice.ToString();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
             string query = @"
-        INSERT INTO dbo.Table_1 ([Patient name], Address,[Contact no.], Age, [Test to conduct], Price, Birthdate,[Date today], Gender, Referral) 
-        VALUES (@Text1, @Text2, @Text3, @Text4, @Text5, @Text6, @DateValue, @DateValue1 ,@Combo1, @Combo2)";
+INSERT INTO dbo.Table_1 ([Patient name], Address, [Contact no.], Age, [Test to conduct], Price, Birthdate, [Date today], Gender, Referral) 
+VALUES (@Text1, @Text2, @Text3, @Text4, @Text5, @Text6, @DateValue, @DateValue1, @Combo1, @Combo2)";
+
             try
             {
                 // Gather input from TextBoxes
@@ -156,23 +163,20 @@ namespace Pure_Health
                 string text3 = textBox3.Text;
                 string text4 = textBox4.Text;
                 string text5 = textBox5.Text;
-                
-                string text6 = label12.Text;
+
+                // Convert textBox6 value to an integer for Price
+                string text6 = textBox6.Text;
                 int priceValue;
 
-                if (int.TryParse(text6, out priceValue))
+                if (!int.TryParse(text6, out priceValue))
                 {
-                    // Successfully converted text6 to an integer
+                    // Show an error if the conversion fails
+                    MessageBox.Show("Invalid price entered. Please enter a valid numeric value for the price.");
+                    return; // Stop execution if the price is invalid
                 }
-                else
-                {
-                    // Handle the error case when the conversion fails
-                    MessageBox.Show("Invalid price entered. Please enter a valid number for the price.");
-                    return; // Exit the method if price conversion fails
-                }
-                // Get value from DateTimePicker
+
+                // Get values from DateTimePicker
                 DateTime dateValue = dateTimePicker1.Value;
-                DateTime dateValue1 = dateTimePicker1.Value;
 
                 // Gather input from ComboBoxes
                 string combo1 = comboBox1.SelectedItem?.ToString() ?? "";
@@ -200,7 +204,7 @@ namespace Pure_Health
                         command.Parameters.AddWithValue("@Text3", text3);
                         command.Parameters.AddWithValue("@Text4", text4);
                         command.Parameters.AddWithValue("@Text5", text5);
-                        command.Parameters.AddWithValue("@Text6", priceValue);
+                        command.Parameters.AddWithValue("@Text6", priceValue); // Pass the integer price value
                         command.Parameters.AddWithValue("@DateValue", dateValue);
                         command.Parameters.AddWithValue("@DateValue1", dateValue);
                         command.Parameters.AddWithValue("@Combo1", combo1);
@@ -217,8 +221,8 @@ namespace Pure_Health
                             // Refresh the DataGridView
                             LoadDataIntoDataGridView();
 
+                            // Clear input fields
                             ClearInputFields();
-
                         }
                         else
                         {
@@ -226,6 +230,8 @@ namespace Pure_Health
                         }
                     }
                 }
+
+                // Update Gross in Form 2
                 UpdateGrossInForm2();
             }
             catch (Exception ex)
@@ -234,13 +240,14 @@ namespace Pure_Health
                 MessageBox.Show("An error occurred: " + ex.Message);
             }
         }
+
         public void UpdateGrossInForm2()
         {
             
             formReports formReports = Application.OpenForms.OfType<formReports>().FirstOrDefault();
             if (formReports != null)
             {
-                formReports.RefreshGross(DateTime.Now.Date, decimal.Parse(label12.Text));
+                formReports.RefreshGross(DateTime.Now.Date, decimal.Parse(textBox6.Text));
             }
         }
 
@@ -294,7 +301,7 @@ namespace Pure_Health
             comboBox2.SelectedIndex = -1;
 
             // Clear label text if needed
-            label12.Text = "";
+            textBox6.Text = "";
         }
 
 
@@ -444,7 +451,7 @@ namespace Pure_Health
                 textBox3.Text = dataGridView1.SelectedRows[0].Cells["Contact no."].Value.ToString();
                 textBox4.Text = dataGridView1.SelectedRows[0].Cells["Age"].Value.ToString();
                 textBox5.Text = dataGridView1.SelectedRows[0].Cells["Test to conduct"].Value.ToString();
-                label12.Text = dataGridView1.SelectedRows[0].Cells["Price"].Value.ToString();
+                textBox6.Text = dataGridView1.SelectedRows[0].Cells["Price"].Value.ToString();
                 dateTimePicker1.Value = Convert.ToDateTime(dataGridView1.SelectedRows[0].Cells["Birthdate"].Value);
                 dateTimePicker2.Value = Convert.ToDateTime(dataGridView1.SelectedRows[0].Cells["Date today"].Value);
                 comboBox1.SelectedItem = dataGridView1.SelectedRows[0].Cells["Gender"].Value.ToString();
@@ -465,7 +472,7 @@ namespace Pure_Health
             string contactNo = textBox3.Text;
             int age = int.Parse(textBox4.Text);
             string testToConduct = textBox5.Text;
-            decimal price = decimal.Parse(label12.Text);
+            decimal price = decimal.Parse(textBox6.Text);
             DateTime birthdate = dateTimePicker1.Value;
             DateTime Datetoday = dateTimePicker2.Value;
             string gender = comboBox1.SelectedItem?.ToString();

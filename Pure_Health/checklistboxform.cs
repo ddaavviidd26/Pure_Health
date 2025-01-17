@@ -71,7 +71,7 @@ namespace Pure_Health
         private void checkedListBox1_ItemCheck(object sender, ItemCheckEventArgs e)
         {
             var item = checkedListBox1.Items[e.Index].ToString();
-            
+
             if (itemPrices.ContainsKey(item))
             {
                 var price = itemPrices[item];
@@ -103,6 +103,10 @@ namespace Pure_Health
 
         private void button1_Click(object sender, EventArgs e)
         {
+            // Pass the selected items and total price to the other form
+            formPatient formPatient = (formPatient)Owner; // Assuming the calling form is FormPatient
+            formPatient.UpdateSummary(SelectedItems, (int)TotalPrice);
+
             DialogResult = DialogResult.OK;
             Close();
         }
