@@ -12,43 +12,54 @@ namespace Pure_Health
 {
     public partial class checklistboxform : Form
     {
+        public class ItemDetails
+        {
+            public decimal Price { get; set; }
+            public string Label { get; set; }
+
+            public ItemDetails(decimal price, string label)
+            {
+                Price = price;
+                Label = label;
+            }
+        }
         public List<string> SelectedItems { get; private set; } = new List<string>();
-        private Dictionary<string, decimal> itemPrices = new Dictionary<string, decimal>
+        private Dictionary<string, ItemDetails> itemDetails = new Dictionary<string, ItemDetails>
     {
-        { "CBC + Platelet Count", 260.00m },
-        { "Blood Typing with RH Typing", 260.00m },
-        { "ESR", 260.00m },
-        { "CT BT", 150.00m },
-        { "FBS",  155.00m },
-        { "BUN", 155.00m },
-        { "Creatinine",  155.00m },
-        { "Blood Uric Acid",  155.00m },
-        { "Cholesterol",  255.00m },
-        { "Triglycerides", 255.00m },
-        { "HDL", 255.00m },
-        { "LDL", 255.00m },
-        { "VLDL", 255.00m },
-        { "SGOT", 255.00m },
-        { "SGPT", 255.00m },
-        { "Protime", 460.00m },
-        { "PTT-Retic Count", 450.00m },
-        { "Malarial Smear", 400.00m },
-        { "PBS (blood smear)", 505.00m },
-        { "VDRL/RPR", 255.00m },
-        { "Widal Test", 375.00m },
-        { "Sodium", 255.00m },
-        { "Potassium", 255.00m },
-        { "Urinalysis", 85.00m },
-        { "Fecalysis", 80.00m },
-        { "Phosphorus", 310.00m },
-        { "Magnesium", 350.00m },
-        { "Acid Phos.", 350.00m },
-        { "Alka Phos.", 350.00m },
-        { "CPK-MB", 1100.00m },
-        { "CPK-MM", 1100.00m },
-        { "Troponin I/T", 1250.00m },
-        { "HEPA B PROFILE", 2050.00m },
-        { "HEPA ABC PROFILE", 3100.00m },
+        { "CBC + Platelet Count", new ItemDetails(260.00m, "LAB") },
+            { "Blood Typing with RH Typing", new ItemDetails(260.00m, "LAB") },
+            { "ESR", new ItemDetails(260.00m, "LAB") },
+            { "CT BT", new ItemDetails(150.00m, "LAB") },
+            { "FBS", new ItemDetails(155.00m, "LAB") },
+            { "BUN", new ItemDetails(155.00m, "LAB") },
+            { "Creatinine", new ItemDetails(155.00m, "LAB") },
+            { "Blood Uric Acid", new ItemDetails(155.00m, "LAB") },
+            { "Cholesterol", new ItemDetails(255.00m, "LAB") },
+            { "Triglycerides", new ItemDetails(255.00m, "LAB") },
+            { "HDL", new ItemDetails(255.00m, "LAB") },
+            { "LDL", new ItemDetails(255.00m, "LAB") },
+            { "VLDL", new ItemDetails(255.00m, "LAB") },
+            { "SGOT", new ItemDetails(255.00m, "LAB") },
+            { "SGPT", new ItemDetails(255.00m, "LAB") },
+            { "Protime", new ItemDetails(460.00m, "LAB") },
+            { "PTT-Retic Count", new ItemDetails(450.00m, "LAB") },
+            { "Malarial Smear", new ItemDetails(400.00m, "LAB") },
+            { "PBS (blood smear)", new ItemDetails(505.00m, "LAB") },
+            { "VDRL/RPR", new ItemDetails(255.00m, "LAB") },
+            { "Widal Test", new ItemDetails(375.00m, "LAB") },
+            { "Sodium", new ItemDetails(255.00m, "LAB") },
+            { "Potassium", new ItemDetails(255.00m, "LAB") },
+            { "Urinalysis", new ItemDetails(85.00m, "LAB") },
+            { "Fecalysis", new ItemDetails(80.00m, "LAB") },
+            { "Phosphorus", new ItemDetails(310.00m, "LAB") },
+            { "Magnesium", new ItemDetails(350.00m, "LAB") },
+            { "Acid Phos.", new ItemDetails(350.00m, "LAB") },
+            { "Alka Phos.", new ItemDetails(350.00m, "LAB") },
+            { "CPK-MB", new ItemDetails(1100.00m, "LAB") },
+            { "CPK-MM", new ItemDetails(1100.00m, "LAB") },
+            { "Troponin I/T", new ItemDetails(1250.00m, "LAB") },
+            { "HEPA B PROFILE", new ItemDetails(2050.00m, "LAB") },
+            { "HEPA ABC PROFILE", new ItemDetails(3100.00m, "LAB") },
 
 
     };
@@ -60,32 +71,33 @@ namespace Pure_Health
         }
         private void InitializeChecklistBox()
         {
-            foreach (var item in itemPrices.Keys)
+            foreach (var item in itemDetails)
             {
-                checkedListBox1.Items.Add(item);
+                checkedListBox1.Items.Add($"{item.Key} ({item.Value.Label})");
             }
 
             checkedListBox1.ItemCheck += checkedListBox1_ItemCheck;
         }
 
+
         private void checkedListBox1_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            var item = checkedListBox1.Items[e.Index].ToString();
+            var itemDisplay = checkedListBox1.Items[e.Index].ToString();
+            var itemName = itemDisplay.Split('(')[0].Trim(); // Extract the name before the label
 
-            if (itemPrices.ContainsKey(item))
+            if (itemDetails.ContainsKey(itemName))
             {
-                var price = itemPrices[item];
+                var details = itemDetails[itemName];
 
-                // Adjust TotalPrice based on the new state of the item
-                if (e.NewValue == CheckState.Checked && !SelectedItems.Contains(item))
+                if (e.NewValue == CheckState.Checked && !SelectedItems.Contains(itemName))
                 {
-                    TotalPrice += price;
-                    SelectedItems.Add(item);
+                    TotalPrice += details.Price;
+                    SelectedItems.Add($"{itemName} ({details.Label})");
                 }
                 else if (e.NewValue == CheckState.Unchecked)
                 {
-                    TotalPrice -= price;
-                    SelectedItems.Remove(item);
+                    TotalPrice -= details.Price;
+                    SelectedItems.Remove($"{itemName} ({details.Label})");
                 }
             }
         }
@@ -103,10 +115,7 @@ namespace Pure_Health
 
         private void button1_Click(object sender, EventArgs e)
         {
-            // Pass the selected items and total price to the other form
-            formPatient formPatient = (formPatient)Owner; // Assuming the calling form is FormPatient
-            formPatient.UpdateSummary(SelectedItems, (int)TotalPrice);
-
+            
             DialogResult = DialogResult.OK;
             Close();
         }

@@ -135,25 +135,44 @@ namespace Pure_Health
             {
                 if (popup.ShowDialog() == DialogResult.OK)
                 {
-
-                    textBox6.Text = $"{popup.TotalPrice:C}";
+                    // Update the total price and selected items
+                    textBox6.Text = popup.TotalPrice.ToString("F2");
                     textBox5.Text = string.Join(Environment.NewLine, popup.SelectedItems);
+
+                    // Get selected categories (LAB, XRAY, etc.)
+                    List<string> labItems = popup.SelectedItems.Where(item => item.Contains("LAB")).ToList();
+                    List<string> utzItems = popup.SelectedItems.Where(item => item.Contains("UTZ")).ToList();
+
+                    // Reflect categories in textBox7
+                    textBox7.Clear(); // Clear the existing text in textBox7 before adding new ones
+                    foreach (var item in popup.SelectedItems)
+                    {
+                        var itemName = item.Split('(')[1].Replace(")", "").Trim(); // Extract the category (LAB, XRAY, etc.)
+                        textBox7.Text += itemName + Environment.NewLine;
+                    }
+ 
+                   
                 }
             }
         }
-        public void UpdateSummary(List<string> selectedItems, int totalPrice)
+
+
+
+
+        public void UpdateSummary(List<string> selectedItems, float totalPrice)
         {
             // Update a TextBox with the selected items and total price
             textBox6.Text = string.Join(", ", selectedItems);
             textBox5.Text = totalPrice.ToString();
+
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
             string query = @"
-INSERT INTO dbo.Table_1 ([Patient name], Address, [Contact no.], Age, [Test to conduct], Price, Birthdate, [Date today], Gender, Referral) 
-VALUES (@Text1, @Text2, @Text3, @Text4, @Text5, @Text6, @DateValue, @DateValue1, @Combo1, @Combo2)";
+    INSERT INTO dbo.Table_1 ([Patient name], Address, [Contact no.], Age, [Test to conduct], Price, Birthdate, [Date today], Gender, Referral) 
+    VALUES (@Text1, @Text2, @Text3, @Text4, @Text5, @Text6, @DateValue, @DateValue1, @Combo1, @Combo2)";
 
             try
             {
@@ -164,35 +183,38 @@ VALUES (@Text1, @Text2, @Text3, @Text4, @Text5, @Text6, @DateValue, @DateValue1,
                 string text4 = textBox4.Text;
                 string text5 = textBox5.Text;
 
-                // Convert textBox6 value to an integer for Price
+                // Convert textBox6 value to a float for Price
                 string text6 = textBox6.Text;
-                int priceValue;
-
-                if (!int.TryParse(text6, out priceValue))
+                if (!float.TryParse(text6, out float priceValue))
                 {
-                    // Show an error if the conversion fails
                     MessageBox.Show("Invalid price entered. Please enter a valid numeric value for the price.");
-                    return; // Stop execution if the price is invalid
+                    return;
                 }
 
                 // Get values from DateTimePicker
-                DateTime dateValue = dateTimePicker1.Value;
+                DateTime dateValue = dateTimePicker1.Value; // Assuming this is the birthdate
+                DateTime dateValue1 = dateTimePicker2.Value; // Assuming this is the date today
 
                 // Gather input from ComboBoxes
                 string combo1 = comboBox1.SelectedItem?.ToString() ?? "";
                 string combo2 = comboBox2.SelectedItem?.ToString() ?? "";
 
-                // Validation (optional)
+                // Validation
                 if (string.IsNullOrWhiteSpace(text1) || string.IsNullOrWhiteSpace(combo1))
                 {
                     MessageBox.Show("Please fill in all required fields.");
                     return;
                 }
 
+                // Extract the categories from textBox7
+                List<string> categories = textBox7.Text.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
+                                                       .Select(item => item.Trim())
+                                                       .Where(item => !string.IsNullOrEmpty(item))
+                                                       .ToList();
+
                 // Create a connection to SQL Server
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-                    // Open the connection
                     connection.Open();
 
                     // Create a command object
@@ -204,9 +226,9 @@ VALUES (@Text1, @Text2, @Text3, @Text4, @Text5, @Text6, @DateValue, @DateValue1,
                         command.Parameters.AddWithValue("@Text3", text3);
                         command.Parameters.AddWithValue("@Text4", text4);
                         command.Parameters.AddWithValue("@Text5", text5);
-                        command.Parameters.AddWithValue("@Text6", priceValue); // Pass the integer price value
+                        command.Parameters.AddWithValue("@Text6", priceValue);
                         command.Parameters.AddWithValue("@DateValue", dateValue);
-                        command.Parameters.AddWithValue("@DateValue1", dateValue);
+                        command.Parameters.AddWithValue("@DateValue1", dateValue1);
                         command.Parameters.AddWithValue("@Combo1", combo1);
                         command.Parameters.AddWithValue("@Combo2", combo2);
 
@@ -216,13 +238,18 @@ VALUES (@Text1, @Text2, @Text3, @Text4, @Text5, @Text6, @DateValue, @DateValue1,
                         // Provide feedback to the user
                         if (rowsAffected > 0)
                         {
+                            ReorganizeIDs(); // Ensure this method is implemented correctly
                             MessageBox.Show("Data saved successfully!");
+                            LoadDataIntoDataGridView(); // Ensure this method refreshes the DataGridView
 
-                            // Refresh the DataGridView
-                            LoadDataIntoDataGridView();
+                            // Now reflect the data in formReports
+                            if (Owner is formReports formReports)
+                            {
+                                formReports.UpdateGrossValue(dateValue, priceValue, categories);
+                            }
 
-                            // Clear input fields
-                            ClearInputFields();
+                            // Clear input fields after adding data
+                            ClearInputFields(); // Ensure this method clears all relevant fields
                         }
                         else
                         {
@@ -230,26 +257,16 @@ VALUES (@Text1, @Text2, @Text3, @Text4, @Text5, @Text6, @DateValue, @DateValue1,
                         }
                     }
                 }
-
-                // Update Gross in Form 2
-                UpdateGrossInForm2();
             }
             catch (Exception ex)
             {
-                // Handle errors
-                MessageBox.Show("An error occurred: " + ex.Message);
+                MessageBox.Show($"An error occurred: {ex.Message}");
             }
         }
 
-        public void UpdateGrossInForm2()
-        {
-            
-            formReports formReports = Application.OpenForms.OfType<formReports>().FirstOrDefault();
-            if (formReports != null)
-            {
-                formReports.RefreshGross(DateTime.Now.Date, decimal.Parse(textBox6.Text));
-            }
-        }
+
+
+
 
         // Method to Load Data into DataGridView
         private void LoadDataIntoDataGridView()
@@ -291,6 +308,7 @@ VALUES (@Text1, @Text2, @Text3, @Text4, @Text5, @Text6, @DateValue, @DateValue1,
             textBox3.Clear();
             textBox4.Clear();
             textBox5.Clear();
+            textBox7.Clear();
 
             // Reset DateTimePicker
             dateTimePicker1.Value = DateTime.Now;
@@ -398,46 +416,48 @@ VALUES (@Text1, @Text2, @Text3, @Text4, @Text5, @Text6, @DateValue, @DateValue1,
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
 
             string reorganizeQuery = @"
-        BEGIN TRANSACTION;
+    BEGIN TRANSACTION;
 
-        -- Step 1: Create a temporary table with the same schema but without the IDENTITY property
-        SELECT ROW_NUMBER() OVER (ORDER BY Id) AS NewId, [Patient name], Address, [Contact no.], Age, [Test to conduct], Price, Birthdate,[Date today], Gender, Referral
-        INTO #TempTable
-        FROM dbo.Table_1;
+    SELECT ROW_NUMBER() OVER (ORDER BY Id) AS NewId, [Patient name], Address, [Contact no.], Age, [Test to conduct], Price, Birthdate, [Date today], Gender, Referral
+    INTO #TempTable
+    FROM dbo.Table_1;
 
-        -- Step 2: Disable identity insert on the original table
-        SET IDENTITY_INSERT dbo.Table_1 ON;
+    TRUNCATE TABLE dbo.Table_1;
 
-        -- Step 3: Truncate the original table
-        TRUNCATE TABLE dbo.Table_1;
+    SET IDENTITY_INSERT dbo.Table_1 ON;
 
-        -- Step 4: Insert the data back into the original table with sequential IDs
-        INSERT INTO dbo.Table_1 (Id, [Patient name], Address, [Contact no.], Age, [Test to conduct], Price, Birthdate,[Date today], Gender, Referral)
-        SELECT NewId, [Patient name], Address, [Contact no.], Age, [Test to conduct], Price, Birthdate,[Date today], Gender, Referral
-        FROM #TempTable;
+    INSERT INTO dbo.Table_1 (Id, [Patient name], Address, [Contact no.], Age, [Test to conduct], Price, Birthdate, [Date today], Gender, Referral)
+    SELECT NewId, [Patient name], Address, [Contact no.], Age, [Test to conduct], Price, Birthdate, [Date today], Gender, Referral
+    FROM #TempTable;
 
-        -- Step 5: Drop the temporary table
-        DROP TABLE #TempTable;
+    SET IDENTITY_INSERT dbo.Table_1 OFF;
 
-        -- Step 6: Reset the identity seed
-        DBCC CHECKIDENT ('dbo.Table_1', RESEED, 0);
+    DROP TABLE #TempTable;
 
-        -- Step 7: Re-enable identity insert
-        SET IDENTITY_INSERT dbo.Table_1 OFF;
+    DBCC CHECKIDENT ('dbo.Table_1', RESEED, 0);
 
-        COMMIT TRANSACTION;
-    ";
+    COMMIT TRANSACTION;
+";
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            try
             {
-                connection.Open();
-
-                using (SqlCommand command = new SqlCommand(reorganizeQuery, connection))
+                using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-                    command.ExecuteNonQuery();
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(reorganizeQuery, connection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred during reorganization: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
+
+
 
 
         private void button4_Click(object sender, EventArgs e)
