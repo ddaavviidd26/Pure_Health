@@ -17,8 +17,10 @@ namespace Pure_Health
     public partial class formPatient : Form
     {
 
+
         public formPatient()
         {
+
             InitializeComponent();
             CustomizeSearchButton();
             this.Paint += Form1_Paint;
@@ -170,18 +172,18 @@ namespace Pure_Health
         private void button2_Click(object sender, EventArgs e)
         {
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
-            string query = @"
-    INSERT INTO dbo.Table_1 ([Patient name], Address, [Contact no.], Age, [Test to conduct], Price, Birthdate, [Date today], Gender, Referral) 
-    VALUES (@Text1, @Text2, @Text3, @Text4, @Text5, @Text6, @DateValue, @DateValue1, @Combo1, @Combo2)";
+            string queryTable1 = @"
+    INSERT INTO dbo.Table_1 ([Patient name], Address, [Contact no.], Age, [Test to conduct], Price, categories, Birthdate, [Date today], Gender, Referral) 
+    VALUES (@Text1, @Text2, @Text3, @Text4, @Text5, @Text6, @Text7, @DateValue, @DateValue1, @Combo1, @Combo2)";
 
             try
             {
                 // Gather input from TextBoxes
-                string text1 = textBox1.Text;
-                string text2 = textBox2.Text;
-                string text3 = textBox3.Text;
-                string text4 = textBox4.Text;
-                string text5 = textBox5.Text;
+                string text1 = textBox1.Text; // Patient Name
+                string text2 = textBox2.Text; // Address
+                string text3 = textBox3.Text; // Contact no.
+                string text4 = textBox4.Text; // Age
+                string text5 = textBox5.Text; // Test to conduct
 
                 // Convert textBox6 value to a float for Price
                 string text6 = textBox6.Text;
@@ -191,13 +193,19 @@ namespace Pure_Health
                     return;
                 }
 
+                // Split multiline input in textBox7 into individual categories
+                string[] categories = textBox7.Text
+                    .Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(c => c.Trim())
+                    .ToArray();
+
                 // Get values from DateTimePicker
-                DateTime dateValue = dateTimePicker1.Value; // Assuming this is the birthdate
-                DateTime dateValue1 = dateTimePicker2.Value; // Assuming this is the date today
+                DateTime dateValue = dateTimePicker1.Value; // Birthdate
+                DateTime dateValue1 = dateTimePicker2.Value; // Date today
 
                 // Gather input from ComboBoxes
-                string combo1 = comboBox1.SelectedItem?.ToString() ?? "";
-                string combo2 = comboBox2.SelectedItem?.ToString() ?? "";
+                string combo1 = comboBox1.SelectedItem?.ToString() ?? ""; // Gender
+                string combo2 = comboBox2.SelectedItem?.ToString() ?? ""; // Referral
 
                 // Validation
                 if (string.IsNullOrWhiteSpace(text1) || string.IsNullOrWhiteSpace(combo1))
@@ -206,54 +214,111 @@ namespace Pure_Health
                     return;
                 }
 
-                // Extract the categories from textBox7
-                List<string> categories = textBox7.Text.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
-                                                       .Select(item => item.Trim())
-                                                       .Where(item => !string.IsNullOrEmpty(item))
-                                                       .ToList();
-
                 // Create a connection to SQL Server
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
 
-                    // Create a command object
-                    using (SqlCommand command = new SqlCommand(query, connection))
+                    // Start a transaction to ensure consistency
+                    using (SqlTransaction transaction = connection.BeginTransaction())
                     {
-                        // Add parameters to prevent SQL injection
-                        command.Parameters.AddWithValue("@Text1", text1);
-                        command.Parameters.AddWithValue("@Text2", text2);
-                        command.Parameters.AddWithValue("@Text3", text3);
-                        command.Parameters.AddWithValue("@Text4", text4);
-                        command.Parameters.AddWithValue("@Text5", text5);
-                        command.Parameters.AddWithValue("@Text6", priceValue);
-                        command.Parameters.AddWithValue("@DateValue", dateValue);
-                        command.Parameters.AddWithValue("@DateValue1", dateValue1);
-                        command.Parameters.AddWithValue("@Combo1", combo1);
-                        command.Parameters.AddWithValue("@Combo2", combo2);
-
-                        // Execute the command
-                        int rowsAffected = command.ExecuteNonQuery();
-
-                        // Provide feedback to the user
-                        if (rowsAffected > 0)
+                        try
                         {
-                            ReorganizeIDs(); // Ensure this method is implemented correctly
-                            MessageBox.Show("Data saved successfully!");
-                            LoadDataIntoDataGridView(); // Ensure this method refreshes the DataGridView
-
-                            // Now reflect the data in formReports
-                            if (Owner is formReports formReports)
+                            // Insert data into Table_1
+                            using (SqlCommand command = new SqlCommand(queryTable1, connection, transaction))
                             {
-                                formReports.UpdateGrossValue(dateValue, priceValue, categories);
+                                command.Parameters.AddWithValue("@Text1", text1);
+                                command.Parameters.AddWithValue("@Text2", text2);
+                                command.Parameters.AddWithValue("@Text3", text3);
+                                command.Parameters.AddWithValue("@Text4", text4);
+                                command.Parameters.AddWithValue("@Text5", text5);
+                                command.Parameters.AddWithValue("@Text6", priceValue);
+                                command.Parameters.AddWithValue("@Text7", string.Join(", ", categories)); // Store all categories as a comma-separated string
+                                command.Parameters.AddWithValue("@DateValue", dateValue);
+                                command.Parameters.AddWithValue("@DateValue1", dateValue1);
+                                command.Parameters.AddWithValue("@Combo1", combo1);
+                                command.Parameters.AddWithValue("@Combo2", combo2);
+
+                                command.ExecuteNonQuery();
                             }
 
+                            // Update or Insert into Table_6
+                            string queryCheckDate = "SELECT COUNT(*) FROM dbo.Table_6 WHERE [Date] = @DateToday";
+                            int count;
+                            using (SqlCommand checkCommand = new SqlCommand(queryCheckDate, connection, transaction))
+                            {
+                                checkCommand.Parameters.AddWithValue("@DateToday", dateValue1);
+                                count = (int)checkCommand.ExecuteScalar();
+                            }
+
+                            string queryUpdateOrInsertTable6;
+                            if (count > 0)
+                            {
+                                // Update existing row in Table_6
+                                queryUpdateOrInsertTable6 = @"
+    UPDATE dbo.Table_6
+    SET 
+        GROSS = GROSS + @Price,
+        UTZ = UTZ + @UTZCount,
+        LAB = LAB + @LABCount,
+        XRAY = XRAY + @XRAYCount,
+        ECG = ECG + @ECGCount,
+        ECHO = ECHO + @ECHOCount
+    WHERE [Date] = @DateToday";
+                            }
+                            else
+                            {
+                                // Insert new row into Table_6
+                                queryUpdateOrInsertTable6 = @"
+    INSERT INTO dbo.Table_6 ([Date], GROSS, UTZ, LAB, XRAY, ECG, ECHO)
+    VALUES (@DateToday, @Price, @UTZCount, @LABCount, @XRAYCount, @ECGCount, @ECHOCount)";
+                            }
+
+                            // Count the occurrences of each category
+                            int utzCount = categories.Count(c => c.Equals("UTZ", StringComparison.OrdinalIgnoreCase));
+                            int labCount = categories.Count(c => c.Equals("LAB", StringComparison.OrdinalIgnoreCase));
+                            int xrayCount = categories.Count(c => c.Equals("XRAY", StringComparison.OrdinalIgnoreCase));
+                            int ecgCount = categories.Count(c => c.Equals("ECG", StringComparison.OrdinalIgnoreCase));
+                            int echoCount = categories.Count(c => c.Equals("ECHO", StringComparison.OrdinalIgnoreCase));
+
+                            using (SqlCommand updateOrInsertCommand = new SqlCommand(queryUpdateOrInsertTable6, connection, transaction))
+                            {
+                                updateOrInsertCommand.Parameters.AddWithValue("@DateToday", dateValue1);
+                                updateOrInsertCommand.Parameters.AddWithValue("@Price", priceValue);
+                                updateOrInsertCommand.Parameters.AddWithValue("@UTZCount", utzCount);
+                                updateOrInsertCommand.Parameters.AddWithValue("@LABCount", labCount);
+                                updateOrInsertCommand.Parameters.AddWithValue("@XRAYCount", xrayCount);
+                                updateOrInsertCommand.Parameters.AddWithValue("@ECGCount", ecgCount);
+                                updateOrInsertCommand.Parameters.AddWithValue("@ECHOCount", echoCount);
+
+                                int rowsAffected = updateOrInsertCommand.ExecuteNonQuery();
+                                if (rowsAffected > 0)
+                                {
+                                    MessageBox.Show("Data successfully added/updated in Reports.");
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Failed to update Table_6. Please check your input.");
+                                }
+                            }
+
+                            // Commit transaction
+                            transaction.Commit();
+
+                            // Provide feedback to the user
+                            MessageBox.Show("Data saved successfully!");
+
+                            // Refresh DataGridViews
+                            ReorganizeIDs();
+                            LoadDataIntoDataGridView();
+
                             // Clear input fields after adding data
-                            ClearInputFields(); // Ensure this method clears all relevant fields
+                            ClearInputFields();
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            MessageBox.Show("Failed to save data.");
+                            transaction.Rollback();
+                            MessageBox.Show($"An error occurred: {ex.Message}");
                         }
                     }
                 }
@@ -263,6 +328,10 @@ namespace Pure_Health
                 MessageBox.Show($"An error occurred: {ex.Message}");
             }
         }
+
+
+
+
 
 
 
@@ -308,7 +377,7 @@ namespace Pure_Health
             textBox3.Clear();
             textBox4.Clear();
             textBox5.Clear();
-            textBox7.Clear();
+            
 
             // Reset DateTimePicker
             dateTimePicker1.Value = DateTime.Now;
@@ -320,6 +389,7 @@ namespace Pure_Health
 
             // Clear label text if needed
             textBox6.Text = "";
+            textBox7.Clear();
         }
 
 
@@ -418,7 +488,7 @@ namespace Pure_Health
             string reorganizeQuery = @"
     BEGIN TRANSACTION;
 
-    SELECT ROW_NUMBER() OVER (ORDER BY Id) AS NewId, [Patient name], Address, [Contact no.], Age, [Test to conduct], Price, Birthdate, [Date today], Gender, Referral
+    SELECT ROW_NUMBER() OVER (ORDER BY Id) AS NewId, [Patient name], Address, [Contact no.], Age, [Test to conduct], Price, categories,Birthdate, [Date today], Gender, Referral
     INTO #TempTable
     FROM dbo.Table_1;
 
@@ -426,8 +496,8 @@ namespace Pure_Health
 
     SET IDENTITY_INSERT dbo.Table_1 ON;
 
-    INSERT INTO dbo.Table_1 (Id, [Patient name], Address, [Contact no.], Age, [Test to conduct], Price, Birthdate, [Date today], Gender, Referral)
-    SELECT NewId, [Patient name], Address, [Contact no.], Age, [Test to conduct], Price, Birthdate, [Date today], Gender, Referral
+    INSERT INTO dbo.Table_1 (Id, [Patient name], Address, [Contact no.], Age, [Test to conduct], Price, categories,Birthdate, [Date today], Gender, Referral)
+    SELECT NewId, [Patient name], Address, [Contact no.], Age, [Test to conduct], Price, categories,Birthdate, [Date today], Gender, Referral
     FROM #TempTable;
 
     SET IDENTITY_INSERT dbo.Table_1 OFF;
@@ -472,6 +542,7 @@ namespace Pure_Health
                 textBox4.Text = dataGridView1.SelectedRows[0].Cells["Age"].Value.ToString();
                 textBox5.Text = dataGridView1.SelectedRows[0].Cells["Test to conduct"].Value.ToString();
                 textBox6.Text = dataGridView1.SelectedRows[0].Cells["Price"].Value.ToString();
+                textBox7.Text = dataGridView1.SelectedRows[0].Cells["categories"].Value.ToString();
                 dateTimePicker1.Value = Convert.ToDateTime(dataGridView1.SelectedRows[0].Cells["Birthdate"].Value);
                 dateTimePicker2.Value = Convert.ToDateTime(dataGridView1.SelectedRows[0].Cells["Date today"].Value);
                 comboBox1.SelectedItem = dataGridView1.SelectedRows[0].Cells["Gender"].Value.ToString();
@@ -489,10 +560,11 @@ namespace Pure_Health
             // Get updated values from controls
             string name = textBox1.Text;
             string address = textBox2.Text;
-            string contactNo = textBox3.Text;
+            string contactNo = textBox3.Text;          
             int age = int.Parse(textBox4.Text);
             string testToConduct = textBox5.Text;
             decimal price = decimal.Parse(textBox6.Text);
+            string categories = textBox7.Text;
             DateTime birthdate = dateTimePicker1.Value;
             DateTime Datetoday = dateTimePicker2.Value;
             string gender = comboBox1.SelectedItem?.ToString();
@@ -506,18 +578,18 @@ namespace Pure_Health
             }
 
             // Update the record in the database
-            UpdateRecordInDatabase(name, address, contactNo, age, testToConduct, price, birthdate,Datetoday, gender, referral);
+            UpdateRecordInDatabase(name, address, contactNo, age, testToConduct,  price, categories, birthdate,Datetoday, gender, referral);
 
             // Refresh the DataGridView
             LoadDataIntoDataGridView();
         }
-        private void UpdateRecordInDatabase(string name, string address, string contactNo, int age, string testToConduct, decimal price, DateTime birthdate, DateTime datetoday, string gender, string referral)
+        private void UpdateRecordInDatabase(string name, string address, string contactNo, int age, string testToConduct, decimal price, string categories, DateTime birthdate, DateTime datetoday, string gender, string referral)
         {
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
             string query = @"
         UPDATE dbo.Table_1 
         SET Address = @Address, [Contact no.] = @ContactNo, Age = @Age, [Test to conduct] = @TestToConduct, 
-            Price = @Price, Birthdate = @Birthdate, [Date today] = @Datetoday, Gender = @Gender, Referral = @Referral
+            Price = @Price,categories = @categories, Birthdate = @Birthdate, [Date today] = @Datetoday, Gender = @Gender, Referral = @Referral
         WHERE [Patient name] = @Name";
 
             try
@@ -531,8 +603,9 @@ namespace Pure_Health
                         command.Parameters.AddWithValue("@Address", address);
                         command.Parameters.AddWithValue("@ContactNo", contactNo);
                         command.Parameters.AddWithValue("@Age", age);
-                        command.Parameters.AddWithValue("@TestToConduct", testToConduct);
+                        command.Parameters.AddWithValue("@TestToConduct", testToConduct);                       
                         command.Parameters.AddWithValue("@Price", price);
+                        command.Parameters.AddWithValue("@categories", categories);
                         command.Parameters.AddWithValue("@Birthdate", birthdate);
                         command.Parameters.AddWithValue("@Datetoday", datetoday);
                         command.Parameters.AddWithValue("@Gender", gender);

@@ -14,6 +14,7 @@ namespace Pure_Health
 {
     public partial class formReports : Form
     {
+
         public formReports()
         {
             InitializeComponent();
@@ -24,6 +25,7 @@ namespace Pure_Health
         {
             this.ControlBox = false;
             CustomizeDataGridView();
+            LoadDataIntoDataGridView();
             this.ControlBox = false;
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
             string query = "SELECT * FROM dbo.Table_6";
@@ -112,83 +114,6 @@ namespace Pure_Health
         {
 
         }
-        public void UpdateGrossValue(DateTime dateValue, float price, List<string> categories)
-        {
-            string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
-            string query = "SELECT * FROM dbo.Table_1 WHERE [Date today] = @DateValue";
-
-            try
-            {
-                using (SqlConnection connection = new SqlConnection(connectionString))
-                {
-                    connection.Open(); // Ensure the connection is open
-                    SqlDataAdapter adapter = new SqlDataAdapter(query, connection);
-                    adapter.SelectCommand.Parameters.AddWithValue("@DateValue", dateValue);
-                    DataTable dataTable = new DataTable();
-                    adapter.Fill(dataTable);
-
-                    if (dataTable.Rows.Count > 0)
-                    {
-                        var row = dataTable.Rows[0];
-                        float currentGross = Convert.ToSingle(row["GROSS"]);
-                        row["GROSS"] = currentGross + price;
-
-                        foreach (var category in categories)
-                        {
-                            if (category == "UTZ")
-                                row["UTZ"] = Convert.ToInt32(row["UTZ"]) + 1;
-                            else if (category == "LAB")
-                                row["LAB"] = Convert.ToInt32(row["LAB"]) + 1;
-                            else if (category == "XRAY")
-                                row["XRAY"] = Convert.ToInt32(row["XRAY"]) + 1;
-                            else if (category == "ECG")
-                                row["ECG"] = Convert.ToInt32(row["ECG"]) + 1;
-                            else if (category == "ECHO")
-                                row["ECHO"] = Convert.ToInt32(row["ECHO"]) + 1;
-                        }
-
-                        SqlCommandBuilder builder = new SqlCommandBuilder(adapter);
-                        adapter.Update(dataTable);
-
-                        // Reload the DataGridView in formReports
-                        if (Owner is formReports formReports)
-                        {
-                            formReports.LoadDataIntoDataGridView();
-                        }
-                    }
-                    else
-                    {
-                        string insertQuery = @"
-                INSERT INTO dbo.Table_6 (Date, GROSS, UTZ, LAB, XRAY, ECG, ECHO) 
-                VALUES (@Date, @GROSS, @UTZ, @LAB, @XRAY, @ECG, @ECHO)";
-
-                        using (SqlCommand insertCommand = new SqlCommand(insertQuery, connection))
-                        {
-                            insertCommand.Parameters.AddWithValue("@Date", dateValue);
-                            insertCommand.Parameters.AddWithValue("@GROSS", price);
-                            insertCommand.Parameters.AddWithValue("@UTZ", categories.Count(c => c == "UTZ"));
-                            insertCommand.Parameters.AddWithValue("@LAB", categories.Count(c => c == "LAB"));
-                            insertCommand.Parameters.AddWithValue("@XRAY", categories.Count(c => c == "XRAY"));
-                            insertCommand.Parameters.AddWithValue("@ECG", categories.Count(c => c == "ECG"));
-                            insertCommand.Parameters.AddWithValue("@ECHO", categories.Count(c => c == "ECHO"));
-
-                            insertCommand.ExecuteNonQuery();
-
-                            // Reload the DataGridView in formReports
-                            if (Owner is formReports formReports)
-                            {
-                                formReports.LoadDataIntoDataGridView();
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An error occurred: {ex.Message}");
-            }
-        }
-
 
         public void LoadDataIntoDataGridView()
         {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -20,7 +21,10 @@ namespace Pure_Health
 
         private void formAccounting_Load(object sender, EventArgs e)
         {
-            this.ControlBox = false;
+            this.ControlBox = false;                 
+          
         }
+ 
     }
+    
 }

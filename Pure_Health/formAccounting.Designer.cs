@@ -63,7 +63,7 @@
             this.dataGridView1.ColumnHeadersHeight = 30;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.dataGridView1.GridColor = System.Drawing.Color.Black;
-            this.dataGridView1.Location = new System.Drawing.Point(12, 275);
+            this.dataGridView1.Location = new System.Drawing.Point(12, 111);
             this.dataGridView1.MultiSelect = false;
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
@@ -73,7 +73,7 @@
             this.dataGridView1.RowTemplate.ReadOnly = true;
             this.dataGridView1.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(1001, 456);
+            this.dataGridView1.Size = new System.Drawing.Size(1001, 620);
             this.dataGridView1.TabIndex = 31;
             // 
             // formAccounting

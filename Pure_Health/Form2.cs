@@ -248,6 +248,7 @@ namespace Pure_Health
             {
                 reports.Activate();
             }
+
         }
         private void reports_FormClosed(object sender, EventArgs e)
         {
@@ -264,7 +265,14 @@ namespace Pure_Health
                 }
             }
         }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
+
+
 }
 
 
