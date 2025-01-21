@@ -173,8 +173,8 @@ namespace Pure_Health
         {
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
             string queryTable1 = @"
-    INSERT INTO dbo.Table_1 ([Patient name], Address, [Contact no.], Age, [Test to conduct], Price, categories, Birthdate, [Date today], Gender, Referral) 
-    VALUES (@Text1, @Text2, @Text3, @Text4, @Text5, @Text6, @Text7, @DateValue, @DateValue1, @Combo1, @Combo2)";
+INSERT INTO dbo.Table_1 ([Patient name], Address, [Contact no.], Age, [Test to conduct], Price, categories, Birthdate, [Date today], Gender, Referral) 
+VALUES (@Text1, @Text2, @Text3, @Text4, @Text5, @Text6, @Text7, @DateValue, @DateValue1, @Combo1, @Combo2)";
 
             try
             {
@@ -256,22 +256,22 @@ namespace Pure_Health
                             {
                                 // Update existing row in Table_6
                                 queryUpdateOrInsertTable6 = @"
-    UPDATE dbo.Table_6
-    SET 
-        GROSS = GROSS + @Price,
-        UTZ = UTZ + @UTZCount,
-        LAB = LAB + @LABCount,
-        XRAY = XRAY + @XRAYCount,
-        ECG = ECG + @ECGCount,
-        ECHO = ECHO + @ECHOCount
-    WHERE [Date] = @DateToday";
+UPDATE dbo.Table_6
+SET 
+    GROSS = GROSS + @Price,
+    UTZ = UTZ + @UTZCount,
+    LAB = LAB + @LABCount,
+    XRAY = XRAY + @XRAYCount,
+    ECG = ECG + @ECGCount,
+    ECHO = ECHO + @ECHOCount
+WHERE [Date] = @DateToday";
                             }
                             else
                             {
                                 // Insert new row into Table_6
                                 queryUpdateOrInsertTable6 = @"
-    INSERT INTO dbo.Table_6 ([Date], GROSS, UTZ, LAB, XRAY, ECG, ECHO)
-    VALUES (@DateToday, @Price, @UTZCount, @LABCount, @XRAYCount, @ECGCount, @ECHOCount)";
+INSERT INTO dbo.Table_6 ([Date], GROSS, UTZ, LAB, XRAY, ECG, ECHO)
+VALUES (@DateToday, @Price, @UTZCount, @LABCount, @XRAYCount, @ECGCount, @ECHOCount)";
                             }
 
                             // Count the occurrences of each category
@@ -294,7 +294,7 @@ namespace Pure_Health
                                 int rowsAffected = updateOrInsertCommand.ExecuteNonQuery();
                                 if (rowsAffected > 0)
                                 {
-                                    MessageBox.Show("Data successfully added/updated in Reports.");
+                                    
                                 }
                                 else
                                 {
@@ -328,6 +328,7 @@ namespace Pure_Health
                 MessageBox.Show($"An error occurred: {ex.Message}");
             }
         }
+
 
 
 

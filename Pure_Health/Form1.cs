@@ -42,45 +42,60 @@ namespace Pure_Health
 
         private void button1_Click(object sender, EventArgs e)
         {
+{
+                // Connection string - Replace placeholders with actual values
+                string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
+                
 
-            string username = Username.Text.Trim(); // Trim to remove leading/trailing whitespace
-            string password = Password.Text.Trim(); // Trim to remove leading/trailing whitespace
+                // Get input from textboxes
+                string username = Username.Text.Trim();
+            string password = Password.Text.Trim();
 
-            // Check if either TextBox is empty
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            // SQL query to check credentials
+            string query = "SELECT COUNT(1) FROM dbo.Table_7 WHERE Username = @Username AND Password = @Password";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                MessageBox.Show("Both Username and Password are required.", "Input Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return; // Stop further execution
-
-            }
-           
-                // Proceed with authentication  
-            if (AuthenticateUser(username, out string specialization) && password == "purehealth")
-            {
-                if (!string.IsNullOrEmpty(specialization) && specialization.Equals("frontdesk", StringComparison.OrdinalIgnoreCase))
+                try
                 {
-                    MessageBox.Show("Login successful!");
-                    Form3 form3 = new Form3();
-                    form3.Show();
-                    this.Hide();
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        // Add parameters to prevent SQL Injection
+                        command.Parameters.AddWithValue("@Username", username);
+                        command.Parameters.AddWithValue("@Password", password);
+
+                        int count = Convert.ToInt32(command.ExecuteScalar());
+
+                        if (count == 1)
+                        {
+                            MessageBox.Show("Login successful!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                                // Navigate to the next form
+                                Form3 form3 = new Form3();
+                                form3.Show();
+                                this.Hide();
+                            }
+                        else
+                        {
+                            MessageBox.Show("Invalid username or password!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    MessageBox.Show("Access denied. Only frontdesk users can log in.");
+                    MessageBox.Show("An error occurred: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-            }
-            else
-            {
-                MessageBox.Show("Invalid username or password.");
             }
         }
+    }
+        
 
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            Form3 form3 = new Form3();
-            form3.Show();
-            this.Hide();
+            
         }
 
         private void Username_TextChanged(object sender, EventArgs e)
@@ -140,6 +155,18 @@ namespace Pure_Health
         private void Password_MouseEnter(object sender, EventArgs e)
         {
             Password.PasswordChar = '\0'; // Reveal the password
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label7_Click(object sender, EventArgs e)
+        {
+            CreateAcc createAcc = new CreateAcc();
+            createAcc.Show();
+            this.Hide();
         }
     }
 }

@@ -128,13 +128,132 @@ namespace Pure_Health
                 dataGridView1.DataSource = dataTable; // Replace myDataGridView with your actual DataGridView name
             }
         }
+        public void RefreshTable6()
+        {
+            string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
+            string query = "SELECT [Date], GROSS, UTZ, LAB, XRAY, ECG, ECHO FROM dbo.Table_6";
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        SqlDataAdapter adapter = new SqlDataAdapter(command);
+                        DataTable table6Data = new DataTable();
+                        adapter.Fill(table6Data);
+
+                        dataGridView1.DataSource = table6Data;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while refreshing Table_6: {ex.Message}");
+            }
+        }
 
 
+        private void button2_Click(object sender, EventArgs e)
+        {
+            {
+                string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
+                string queryTotals = @"
+    SELECT 
+        SUM(GROSS) AS TotalGross,
+        SUM(UTZ) AS TotalUTZ,
+        SUM(LAB) AS TotalLAB,
+        SUM(XRAY) AS TotalXRAY,
+        SUM(ECG) AS TotalECG,
+        SUM(ECHO) AS TotalECHO
+    FROM dbo.Table_6";
 
+                try
+                {
+                    using (SqlConnection connection = new SqlConnection(connectionString))
+                    {
+                        connection.Open();
+                        using (SqlCommand command = new SqlCommand(queryTotals, connection))
+                        {
+                            using (SqlDataReader reader = command.ExecuteReader())
+                            {
+                                if (reader.Read())
+                                {
+                                    // Update labels with retrieved totals
+                                    label3.Text = reader["TotalGross"] != DBNull.Value ? reader["TotalGross"].ToString() : "0";
+                                    label4.Text = reader["TotalUTZ"] != DBNull.Value ? reader["TotalUTZ"].ToString() : "0";
+                                    label5.Text = reader["TotalLAB"] != DBNull.Value ? reader["TotalLAB"].ToString() : "0";
+                                    label6.Text = reader["TotalXRAY"] != DBNull.Value ? reader["TotalXRAY"].ToString() : "0";
+                                    label7.Text = reader["TotalECG"] != DBNull.Value ? reader["TotalECG"].ToString() : "0";
+                                    label8.Text = reader["TotalECHO"] != DBNull.Value ? reader["TotalECHO"].ToString() : "0";
 
+                                    MessageBox.Show("Totals updated successfully!");
+                                }
+                                else
+                                {
+                                    MessageBox.Show("No data found in Table_6.");
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An error occurred while updating totals: {ex.Message}");
+                }
+            }
+        }
 
-    }
+        private void button1_Click(object sender, EventArgs e)
+        {
+            LoadDataIntoDataGridView();
+        }
 
+        private void button3_Click(object sender, EventArgs e)
+        {
+            // Confirm with the user
+            var confirmResult = MessageBox.Show(
+                "Are you sure you want to delete all data in this Table? This action cannot be undone.",
+                "Confirm Clear",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning);
+
+            if (confirmResult == DialogResult.Yes)
+            {
+                string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
+                string deleteQuery = "DELETE FROM dbo.Table_6";
+
+                try
+                {
+                    using (SqlConnection connection = new SqlConnection(connectionString))
+                    {
+                        connection.Open();
+
+                        using (SqlCommand command = new SqlCommand(deleteQuery, connection))
+                        {
+                            int rowsAffected = command.ExecuteNonQuery();
+
+                            MessageBox.Show(
+                                rowsAffected > 0
+                                ? $"{rowsAffected} rows deleted successfully."
+                                : "This table is already empty.",
+                                "Clear Successful",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information);
+                        }
+                    }
+
+                    // Refresh the display to reflect the cleared table
+                    RefreshTable6();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An error occurred while clearing Table_6: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+        }
 }
 
 

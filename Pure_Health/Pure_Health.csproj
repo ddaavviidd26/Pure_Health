@@ -52,6 +52,12 @@
     <Compile Include="checklistboxform.Designer.cs">
       <DependentUpon>checklistboxform.cs</DependentUpon>
     </Compile>
+    <Compile Include="CreateAcc.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CreateAcc.Designer.cs">
+      <DependentUpon>CreateAcc.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -123,6 +129,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="checklistboxform.resx">
       <DependentUpon>checklistboxform.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CreateAcc.resx">
+      <DependentUpon>CreateAcc.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
