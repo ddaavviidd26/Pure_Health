@@ -115,6 +115,8 @@
             this.Username.Size = new System.Drawing.Size(249, 24);
             this.Username.TabIndex = 7;
             this.Username.TextChanged += new System.EventHandler(this.Username_TextChanged);
+            this.Username.Enter += new System.EventHandler(this.Username_Enter);
+            this.Username.Leave += new System.EventHandler(this.Username_Leave);
             // 
             // Password
             // 
@@ -126,6 +128,8 @@
             this.Password.Name = "Password";
             this.Password.Size = new System.Drawing.Size(249, 24);
             this.Password.TabIndex = 8;
+            this.Password.Enter += new System.EventHandler(this.Password_Enter);
+            this.Password.Leave += new System.EventHandler(this.Password_Leave);
             this.Password.MouseEnter += new System.EventHandler(this.Password_MouseEnter);
             this.Password.MouseLeave += new System.EventHandler(this.Password_MouseLeave_1);
             // 

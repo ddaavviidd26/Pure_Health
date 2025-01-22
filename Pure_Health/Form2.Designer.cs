@@ -286,14 +286,14 @@
             // 
             this.btnAccounting.BackColor = System.Drawing.Color.Green;
             this.btnAccounting.Font = new System.Drawing.Font("Cambria", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnAccounting.Image = global::Pure_Health.Properties.Resources.profit;
+            this.btnAccounting.Image = global::Pure_Health.Properties.Resources.profile_user;
             this.btnAccounting.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnAccounting.Location = new System.Drawing.Point(-13, -21);
             this.btnAccounting.Name = "btnAccounting";
             this.btnAccounting.Padding = new System.Windows.Forms.Padding(25, 0, 0, 0);
             this.btnAccounting.Size = new System.Drawing.Size(296, 99);
             this.btnAccounting.TabIndex = 4;
-            this.btnAccounting.Text = "Accounting";
+            this.btnAccounting.Text = "User Account";
             this.btnAccounting.UseVisualStyleBackColor = false;
             this.btnAccounting.Click += new System.EventHandler(this.btnAccounting_Click);
             // 

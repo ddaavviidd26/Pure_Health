@@ -220,6 +220,7 @@ namespace Pure_Health
                             MessageBox.Show("Data saved successfully!");
 
                             // Refresh the DataGridView
+                            ReorganizeIDs();
                             LoadDataIntoDataGridView();
 
                             ClearInputFields();
@@ -355,15 +356,16 @@ namespace Pure_Health
                 {
                     // Delete the record from the database
                     DeleteRecordFromDatabase(id);
-                    
+
 
 
 
 
 
                     // Refresh the DataGridView
-                    LoadDataIntoDataGridView();
                     ReorganizeIDs();
+                    LoadDataIntoDataGridView();
+                    
 
                 }
             }

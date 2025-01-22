@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Pure_Health
 {
@@ -25,7 +26,9 @@ namespace Pure_Health
 
         private void label3_Click(object sender, EventArgs e)
         {
-
+            Recovery recovery = new Recovery();
+            recovery.Show();
+            this.Hide();
         }
 
         private void label2_Click(object sender, EventArgs e)
@@ -51,10 +54,14 @@ namespace Pure_Health
                 string username = Username.Text.Trim();
             string password = Password.Text.Trim();
 
-            // SQL query to check credentials
-            string query = "SELECT COUNT(1) FROM dbo.Table_7 WHERE Username = @Username AND Password = @Password";
+                // SQL query to check credentials
+                string query = @"
+        SELECT COUNT(1)
+        FROM dbo.Table_7
+        WHERE Username = @Username COLLATE SQL_Latin1_General_CP1_CS_AS
+          AND Password = @Password COLLATE SQL_Latin1_General_CP1_CS_AS";
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
+                using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 try
                 {
@@ -70,7 +77,7 @@ namespace Pure_Health
 
                         if (count == 1)
                         {
-                            MessageBox.Show("Login successful!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            
 
                                 // Navigate to the next form
                                 Form3 form3 = new Form3();
@@ -95,7 +102,17 @@ namespace Pure_Health
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            
+            Username.Text = "Enter Username";
+            Username.ForeColor = Color.Gray;
+
+            Password.Text = "Enter Password";
+            Password.ForeColor = Color.Gray;
+
+            Username.Enter += Username_Enter;
+            Username.Leave += Username_Leave;
+
+            Password.Enter += Password_Enter;
+            Password.Leave += Password_Leave;
         }
 
         private void Username_TextChanged(object sender, EventArgs e)
@@ -107,40 +124,7 @@ namespace Pure_Health
         {
 
         }
-        public bool AuthenticateUser(string username, out string specialization)
-        {
-            string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
-            string query = "SELECT Specialization FROM dbo.Table_3 WHERE UniqueID = @Username";
-
-            specialization = null; // Initialize specialization
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            using (SqlCommand command = new SqlCommand(query, connection))
-            {
-                command.Parameters.AddWithValue("@Username", username);
-
-                try
-                {
-                    connection.Open();
-                    object result = command.ExecuteScalar(); // Get the specialization value
-
-                    if (result != null && result != DBNull.Value)
-                    {
-                        specialization = result.ToString(); // Assign the specialization
-                        return true; // Username found
-                    }
-                    else
-                    {
-                        return false; // Username not found
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Database error: {ex.Message}");
-                    return false;
-                }
-            }
-        }
+        
 
         private void password(object sender, EventArgs e)
         {
@@ -149,12 +133,12 @@ namespace Pure_Health
 
         private void Password_MouseLeave_1(object sender, EventArgs e)
         {
-            Password.PasswordChar = '●'; // Hide the password
+            
         }
 
         private void Password_MouseEnter(object sender, EventArgs e)
         {
-            Password.PasswordChar = '\0'; // Reveal the password
+            
         }
 
         private void pictureBox2_Click(object sender, EventArgs e)
@@ -167,6 +151,42 @@ namespace Pure_Health
             CreateAcc createAcc = new CreateAcc();
             createAcc.Show();
             this.Hide();
+        }
+
+        private void Username_Enter(object sender, EventArgs e)
+        {
+            if (Username.Text == "Enter Username")
+            {
+                Username.Text = "";
+
+            }
+        }
+
+        private void Username_Leave(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(Username.Text))
+            {
+                Username.Text = "Enter Username";
+
+            }
+        }
+
+        private void Password_Enter(object sender, EventArgs e)
+        {
+            if (Password.Text == "Enter Password")
+            {
+                Password.Text = "";
+
+            }
+        }
+
+        private void Password_Leave(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(Password.Text))
+            {
+                Password.Text = "Enter Password";
+
+            }
         }
     }
 }

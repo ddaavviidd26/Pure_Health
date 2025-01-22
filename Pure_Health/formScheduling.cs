@@ -3,6 +3,8 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Text.RegularExpressions;
+
 
 namespace Pure_Health
 {
@@ -151,17 +153,53 @@ namespace Pure_Health
         private void button2_Click(object sender, EventArgs e)
         {
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
-            string query = @"
-                INSERT INTO dbo.Table_4 ([Patient name],[Contact no.], Price,[Schedule time], [Test to conduct], Doctor) 
-                VALUES (@Text1, @Text2, @Text6, @DateValue, @Combo1, @Combo2)";
+            string insertQuery = @"
+        INSERT INTO dbo.Table_4 ([Patient name],[Contact no.], Price,[Schedule time], [Test to conduct], Doctor) 
+        VALUES (@Text1, @Text2, @Text6, @DateValue, @Combo1, @Combo2)";
+
+            string updateTable6Query = @"
+        IF EXISTS (SELECT 1 FROM dbo.Table_6 WHERE [Date] = @DateToday)
+        BEGIN
+            UPDATE dbo.Table_6
+            SET 
+                GROSS = GROSS + @Price,
+                UTZ = UTZ + @UTZCount,
+                LAB = LAB + @LABCount,
+                XRAY = XRAY + @XRAYCount,
+                ECG = ECG + @ECGCount,
+                ECHO = ECHO + @ECHOCount
+            WHERE [Date] = @DateToday
+        END
+        ELSE
+        BEGIN
+             INSERT INTO dbo.Table_6 ([Date], GROSS, UTZ, LAB, XRAY, ECG, ECHO)
+            VALUES (@DateToday, @Price, @UTZCount, @LABCount, @XRAYCount, @ECGCount, @ECHOCount)
+        END";
+
             try
             {
-                string text1 = textBox1.Text;
-                string text2 = textBox2.Text;
-                string text6 = label12.Text.Replace("Price: ₱", ""); // Remove label text prefix
-                DateTime dateValue = dateTimePicker1.Value;
-                string combo1 = comboBox1.SelectedItem?.ToString() ?? "";
-                string combo2 = comboBox2.SelectedItem?.ToString() ?? "";
+                string text1 = textBox1.Text; // Patient Name
+                string text2 = textBox2.Text; // Contact No.
+
+                // Extract and convert text6 (Price)
+                string text6 = label12.Text;
+               string cleanedText6 = Regex.Replace(text6, @"[^\d.]", ""); // Keep only digits and a single decimal point
+if (decimal.TryParse(cleanedText6, out decimal priceValue))
+{
+    // Convert to integer by truncating the decimal portion
+    int intPriceValue = (int)Math.Floor(priceValue);
+}
+else
+{
+    MessageBox.Show("Invalid price. Please ensure the price is numeric.");
+    return;
+}
+
+                DateTime dateValue = dateTimePicker1.Value; // Schedule Time
+                DateTime dateToday = DateTime.Now.Date; // Today's Date
+
+                string combo1 = comboBox1.SelectedItem?.ToString() ?? ""; // Test to Conduct
+                string combo2 = comboBox2.SelectedItem?.ToString() ?? ""; // Doctor
 
                 if (string.IsNullOrWhiteSpace(text1) || string.IsNullOrWhiteSpace(combo1))
                 {
@@ -169,37 +207,67 @@ namespace Pure_Health
                     return;
                 }
 
+                // Determine counts for UTZ and LAB based on comboBox1 value
+                int utzCount = combo1.Equals("Ultrasound", StringComparison.OrdinalIgnoreCase) ? 1 : 0;
+                int labCount = combo1.Equals("Blood Chemistry", StringComparison.OrdinalIgnoreCase) ? 1 : 0;
+                int xrayCount = combo1.Equals("", StringComparison.OrdinalIgnoreCase) ? 1 : 0;
+                int ecgCount = combo1.Equals("", StringComparison.OrdinalIgnoreCase) ? 1 : 0;
+                int echoCount = combo1.Equals("", StringComparison.OrdinalIgnoreCase) ? 1 : 0;
+
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
-                    using (SqlCommand command = new SqlCommand(query, connection))
+                    using (SqlTransaction transaction = connection.BeginTransaction())
                     {
-                        command.Parameters.AddWithValue("@Text1", text1);
-                        command.Parameters.AddWithValue("@Text2", text2);
-                        command.Parameters.AddWithValue("@Text6", text6);
-                        command.Parameters.AddWithValue("@DateValue", dateValue);
-                        command.Parameters.AddWithValue("@Combo1", combo1);
-                        command.Parameters.AddWithValue("@Combo2", combo2);
+                        try
+                        {
+                            // Insert into Table_4
+                            using (SqlCommand command = new SqlCommand(insertQuery, connection, transaction))
+                            {
+                                command.Parameters.AddWithValue("@Text1", text1);
+                                command.Parameters.AddWithValue("@Text2", text2);
+                                command.Parameters.AddWithValue("@Text6", priceValue);
+                                command.Parameters.AddWithValue("@DateValue", dateValue);
+                                command.Parameters.AddWithValue("@Combo1", combo1);
+                                command.Parameters.AddWithValue("@Combo2", combo2);
 
-                        int rowsAffected = command.ExecuteNonQuery();
-                        if (rowsAffected > 0)
-                        {
+                                command.ExecuteNonQuery();
+                            }
+
+                            // Update or Insert into Table_6
+                            using (SqlCommand command = new SqlCommand(updateTable6Query, connection, transaction))
+                            {
+                                command.Parameters.AddWithValue("@DateToday", dateToday);
+                                command.Parameters.AddWithValue("@Price", priceValue);
+                                command.Parameters.AddWithValue("@UTZCount", utzCount);
+                                command.Parameters.AddWithValue("@LABCount", labCount);
+                                command.Parameters.AddWithValue("@XRAYCount", xrayCount);
+                                command.Parameters.AddWithValue("@ECGCount", ecgCount);
+                                command.Parameters.AddWithValue("@ECHOCount", echoCount);
+
+                                command.ExecuteNonQuery();
+                            }
+
+                            transaction.Commit();
                             MessageBox.Show("Data saved successfully!");
-                            LoadDataIntoDataGridView();
-                            ClearInputFields();
+                            LoadDataIntoDataGridView(); // Refresh DataGridView
+                            ClearInputFields(); // Clear input fields
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            MessageBox.Show("Failed to save data.");
+                            transaction.Rollback();
+                            MessageBox.Show($"An error occurred: {ex.Message}");
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("An error occurred: " + ex.Message);
+                MessageBox.Show($"An error occurred: {ex.Message}");
             }
         }
+
+
 
         private void LoadDataIntoDataGridView()
         {
