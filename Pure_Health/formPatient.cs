@@ -201,7 +201,7 @@ VALUES (@Text1, @Text2, @Text3, @Text4, @Text5, @Text6, @Text7, @DateValue, @Dat
 
                 // Get values from DateTimePicker
                 DateTime dateValue = dateTimePicker1.Value; // Birthdate
-                DateTime dateValue1 = DateTime.Now.Date; ; // Date today
+                DateTime dateValue1 = dateTimePicker2.Value; ; // Date today
 
                 // Gather input from ComboBoxes
                 string combo1 = comboBox1.SelectedItem?.ToString() ?? ""; // Gender

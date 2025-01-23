@@ -47,6 +47,7 @@ namespace Pure_Health
                     dataGridView1.DataSource = dataTable;
                 }
             }
+
             catch (Exception ex)
             {
                 // Handle exceptions
