@@ -28,6 +28,7 @@ namespace Pure_Health
             updateTimer.Tick += UpdateTimer_Tick;
         }
         private Timer updateTimer;
+        private Timer realTimeUpdateTimer;
         private (int utz, int lab, int xray, int ecg, int echo) GetTestCountsFromDatabase()
         {
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
@@ -77,26 +78,72 @@ namespace Pure_Health
         private void formDashboard_Load(object sender, EventArgs e)
         {
             this.ControlBox = false;
-            updateTimer.Start();
+            UpdateLabels(); // Initial load
+            updateTimer.Start(); // Start the update timer for pie chart and general updates
 
-            // Perform an initial data load
-            UpdateChart();
-            // Get real test counts from the database
-            var (utzCount, labCount, xrayCount, ecgCount, echoCount) = GetTestCountsFromDatabase();
-
-            // Load the chart with the actual data
-            LoadTestDistributionChart(utzCount, labCount, xrayCount, ecgCount, echoCount);
-            LoadDataAndUpdateChart();
-
-            cartesianChart1 = new LiveCharts.WinForms.CartesianChart();
-
-            // Customize chart properties if needed (optional)
-            // Set up the timer to update the chart every 10 seconds (10000 milliseconds)
+            // Set up the timer for Cartesian chart updates
             Timer chartUpdateTimer = new Timer();
-            chartUpdateTimer.Interval = 10000; // 10 seconds
+            chartUpdateTimer.Interval = 5000; // Update every 5 seconds
             chartUpdateTimer.Tick += ChartUpdateTimer_Tick;
-            chartUpdateTimer.Start(); // Start the timer
+            chartUpdateTimer.Start();
+            
+            
 
+            // Set up the Timer for periodic updates
+            realTimeUpdateTimer = new Timer();
+            realTimeUpdateTimer.Interval = 5000; // Refresh every 5 seconds
+            realTimeUpdateTimer.Tick += RealTimeUpdateTimer_Tick;
+            realTimeUpdateTimer.Start();
+
+            // Initial data load
+            UpdateChart();
+            LoadDataAndUpdateChart();
+        }
+        private void UpdateLabels()
+        {
+            string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    // Fetch total gross from dbo.Table_6
+                    string grossQuery = "SELECT SUM(GROSS) AS GROSS FROM dbo.Table_6";
+                    SqlCommand grossCommand = new SqlCommand(grossQuery, connection);
+                    object grossResult = grossCommand.ExecuteScalar();
+                    label6.Text = grossResult != DBNull.Value ? Convert.ToDecimal(grossResult).ToString("N2") : "0.00";
+
+                    // Fetch total number of Patient Names from dbo.Table_1
+                    string patientTable1Query = "SELECT COUNT([Patient Name]) AS [Patient Name] FROM dbo.Table_1";
+                    SqlCommand patientTable1Command = new SqlCommand(patientTable1Query, connection);
+                    object patientTable1Result = patientTable1Command.ExecuteScalar();
+                    label7.Text = patientTable1Result != DBNull.Value ? Convert.ToInt32(patientTable1Result).ToString() : "0";
+
+                    // Fetch total number of Patient Names from dbo.Table_4
+                    string patientTable4Query = "SELECT COUNT([Patient Name]) AS [Patient Name] FROM dbo.Table_4";
+                    SqlCommand patientTable4Command = new SqlCommand(patientTable4Query, connection);
+                    object patientTable4Result = patientTable4Command.ExecuteScalar();
+                    label8.Text = patientTable4Result != DBNull.Value ? Convert.ToInt32(patientTable4Result).ToString() : "0";
+
+                    // Fetch total number of Employees from Employees Name column in dbo.Table_3
+                    string employeeQuery = "SELECT COUNT([Employees Name]) AS TotalEmployees FROM dbo.Table_3";
+                    SqlCommand employeeCommand = new SqlCommand(employeeQuery, connection);
+                    object employeeResult = employeeCommand.ExecuteScalar();
+                    label9.Text = employeeResult != DBNull.Value ? Convert.ToInt32(employeeResult).ToString() : "0";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while updating labels: {ex.Message}");
+            }
+        }
+
+
+        private void RealTimeUpdateTimer_Tick(object sender, EventArgs e)
+        {
+            UpdateLabels(); // Refresh the labels periodically
         }
 
 
@@ -135,45 +182,47 @@ namespace Pure_Health
         // In formDashboard, method to update the chart
         public void UpdateChart1(DataTable data)
         {
-            // Clear existing series from the chart
-            cartesianChart1.Series.Clear();
-
-            // Create a new LineSeries for "Profit"
-            var lineSeries = new LineSeries
+            if (cartesianChart1.Series.Count == 0)
             {
-                Title = "Profit",
-                Values = new ChartValues<decimal>(), // Store the profit values
-                LineSmoothness = 0, // Straight line (no smoothing)
-                PointGeometrySize = 10, // Size of points on the graph
-                PointGeometry = DefaultGeometries.Circle // Shape of points on the graph
-            };
+                // Create a new LineSeries if none exists
+                var lineSeries = new LineSeries
+                {
+                    Title = "Profit",
+                    Values = new ChartValues<ObservablePoint>(),
+                    LineSmoothness = 0, // Straight lines
+                    PointGeometrySize = 10, // Point size
+                    PointGeometry = DefaultGeometries.Circle // Circle points
+                };
 
-            // Populate the series with data from the DataTable
+                cartesianChart1.Series.Add(lineSeries);
+
+                // Configure axes (once)
+                cartesianChart1.AxisX.Clear();
+                cartesianChart1.AxisX.Add(new Axis
+                {
+                    Title = "Date",
+                    LabelFormatter = value => new DateTime((long)value).ToString("MM/dd/yyyy")
+                });
+
+                cartesianChart1.AxisY.Clear();
+                cartesianChart1.AxisY.Add(new Axis
+                {
+                    Title = "GROSS",
+                    LabelFormatter = value => value.ToString("C")
+                });
+            }
+
+            // Update the existing LineSeries with new data
+            var lineSeriesExisting = cartesianChart1.Series[0] as LineSeries;
+            lineSeriesExisting.Values.Clear();
+
             foreach (DataRow row in data.Rows)
             {
                 DateTime date = Convert.ToDateTime(row["Date"]);
                 decimal profit = Convert.ToDecimal(row["GROSS"]);
-
-                // Add data points (X: Date, Y: Profit)
-                lineSeries.Values.Add(profit);
+                lineSeriesExisting.Values.Add(new ObservablePoint(date.Ticks, (double)profit));
             }
-
-            // Add the series to the chart
-            cartesianChart1.Series.Add(lineSeries);
-
-            // Optional: Customize the chart's axes using automatic features
-            cartesianChart1.AxisX.Add(new Axis
-            {
-                Title = "Date",
-                LabelFormatter = value => new DateTime((long)value).ToString("MM/dd/yyyy") // Format X-axis as Date
-            });
-
-            cartesianChart1.AxisY.Add(new Axis
-            {
-                Title = "GROSS",
-                LabelFormatter = value => value.ToString("C") // Format Y-axis as currency
-            });
-        }
+        }       
 
 
         private void UpdateChart()
@@ -249,8 +298,21 @@ namespace Pure_Health
         {
 
         }
-       
-        
+
+        private void cartesianChart1_ChildChanged_1(object sender, System.Windows.Forms.Integration.ChildChangedEventArgs e)
+        {
+            
+        }
+
+        private void panel2_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void panel3_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }
     

@@ -98,8 +98,13 @@ namespace Pure_Health
 
         private void btnDashboard_Click(object sender, EventArgs e)
         {
-            if (dashboard == null)
-            {
+
+            label2.Visible = false;
+            label3.Visible = false;
+            label4.Visible = false;
+            label5.Visible = false;
+            label6.Visible = false;
+            if (dashboard == null) { 
                 dashboard = new formDashboard();
                 dashboard.FormClosed += Dashboard_FormClosed;
                 dashboard.MdiParent = this;
@@ -116,7 +121,12 @@ namespace Pure_Health
         }
 
         private void btnPatient_Click(object sender, EventArgs e)
-        {       
+        {
+            label2.Visible = false;
+            label3.Visible = false;
+            label4.Visible = false;
+            label5.Visible = false;
+            label6.Visible = false;
             if (patient==null)
             {
                 patient= new formPatient();
@@ -136,6 +146,11 @@ namespace Pure_Health
 
         private void btnInventory_Click(object sender, EventArgs e)
         {
+            label2.Visible = false;
+            label3.Visible = false;
+            label4.Visible = false;
+            label5.Visible = false;
+            label6.Visible = false;
             if (inventory == null)
             {
                 inventory = new formInventory();
@@ -156,6 +171,11 @@ namespace Pure_Health
 
         private void btnEmployee_Click(object sender, EventArgs e)
         {
+            label2.Visible = false;
+            label3.Visible = false;
+            label4.Visible = false;
+            label5.Visible = false;
+            label6.Visible = false;
             if (employees == null)
             {
                 employees = new formEmployees();
@@ -176,6 +196,11 @@ namespace Pure_Health
 
         private void btnScheduling_Click(object sender, EventArgs e)
         {
+            label2.Visible = false;
+            label3.Visible = false;
+            label4.Visible = false;
+            label5.Visible = false;
+            label6.Visible = false;
             if (scheduling == null)
             {
                 scheduling = new formScheduling();
@@ -196,6 +221,11 @@ namespace Pure_Health
 
         private void btnAccounting_Click(object sender, EventArgs e)
         {
+            label2.Visible = false;
+            label3.Visible = false;
+            label4.Visible = false;
+            label5.Visible = false;
+            label6.Visible = false;
             if (accounting == null)
             {
                 accounting = new formAccounting();
@@ -216,6 +246,11 @@ namespace Pure_Health
 
         private void btnAudittrails_Click(object sender, EventArgs e)
         {
+            label2.Visible = false;
+            label3.Visible = false;
+            label4.Visible = false;
+            label5.Visible = false;
+            label6.Visible = false;
             if (audittrails == null)
             {
                 audittrails = new formAudittrails();
@@ -236,6 +271,11 @@ namespace Pure_Health
 
         private void btnReports_Click(object sender, EventArgs e)
         {
+            label2.Visible = false;
+            label3.Visible = false;
+            label4.Visible = false;
+            label5.Visible = false;
+            label6.Visible = false;
             if (reports == null)
             {
                 reports = new formReports();

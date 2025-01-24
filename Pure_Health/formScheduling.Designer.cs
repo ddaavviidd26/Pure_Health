@@ -196,6 +196,7 @@
             this.label11.Size = new System.Drawing.Size(173, 28);
             this.label11.TabIndex = 39;
             this.label11.Text = "Test to conduct:";
+            this.label11.Click += new System.EventHandler(this.label11_Click);
             // 
             // label10
             // 
