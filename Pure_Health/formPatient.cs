@@ -20,7 +20,6 @@ namespace Pure_Health
 
         public formPatient()
         {
-
             InitializeComponent();
             CustomizeSearchButton();
             this.Paint += Form1_Paint;
@@ -92,6 +91,10 @@ namespace Pure_Health
         
         private void formPatient_Load(object sender, EventArgs e)
         {
+            dateTimePicker1.Format = DateTimePickerFormat.Custom;
+            dateTimePicker1.CustomFormat = "yyyy-MM-dd"; // Display format for the date
+            dateTimePicker2.Format = DateTimePickerFormat.Custom;
+            dateTimePicker2.CustomFormat = "yyyy-MM-dd"; // Display format for the date
             CustomizeDataGridView();
             this.ControlBox = false;
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
@@ -171,6 +174,8 @@ namespace Pure_Health
 
         private void button2_Click(object sender, EventArgs e)
         {
+            DateTime selectedDate = dateTimePicker1.Value.Date;
+
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
             string queryTable1 = @"
 INSERT INTO dbo.Table_1 ([Patient name], Address, [Contact no.], Age, [Test to conduct], Price, categories, Birthdate, [Date today], Gender, Referral) 

@@ -182,6 +182,7 @@ namespace Pure_Health
         // In formDashboard, method to update the chart
         public void UpdateChart1(DataTable data)
         {
+            // Check if the cartesian chart has no series
             if (cartesianChart1.Series.Count == 0)
             {
                 // Create a new LineSeries if none exists
@@ -196,33 +197,55 @@ namespace Pure_Health
 
                 cartesianChart1.Series.Add(lineSeries);
 
-                // Configure axes (once)
+                // Configure the X-axis (date axis)
                 cartesianChart1.AxisX.Clear();
                 cartesianChart1.AxisX.Add(new Axis
                 {
                     Title = "Date",
-                    LabelFormatter = value => new DateTime((long)value).ToString("MM/dd/yyyy")
+                    LabelFormatter = value => new DateTime((long)value).ToString("MM/dd/yyyy"),
+                    MinValue = DateTime.Now.AddDays(-30).Ticks, // Example: last 30 days
+                    MaxValue = DateTime.Now.Ticks              // Current date
                 });
 
+                // Configure the Y-axis (profit axis)
                 cartesianChart1.AxisY.Clear();
                 cartesianChart1.AxisY.Add(new Axis
                 {
                     Title = "GROSS",
-                    LabelFormatter = value => value.ToString("C")
+                    LabelFormatter = value => value.ToString("C"), // Format as currency
+                    MinValue = 0 // Ensure Y-axis starts at 0
                 });
             }
 
             // Update the existing LineSeries with new data
             var lineSeriesExisting = cartesianChart1.Series[0] as LineSeries;
-            lineSeriesExisting.Values.Clear();
 
-            foreach (DataRow row in data.Rows)
+            if (lineSeriesExisting != null)
             {
-                DateTime date = Convert.ToDateTime(row["Date"]);
-                decimal profit = Convert.ToDecimal(row["GROSS"]);
-                lineSeriesExisting.Values.Add(new ObservablePoint(date.Ticks, (double)profit));
+                lineSeriesExisting.Values.Clear(); // Clear existing values
+
+                foreach (DataRow row in data.Rows)
+                {
+                    // Check for valid data before adding to the chart
+                    if (row["Date"] == DBNull.Value || row["GROSS"] == DBNull.Value)
+                        continue;
+
+                    DateTime date = Convert.ToDateTime(row["Date"]);
+                    decimal profit = Convert.ToDecimal(row["GROSS"]);
+
+                    // Add data to the series
+                    lineSeriesExisting.Values.Add(new ObservablePoint(date.Ticks, (double)profit));
+                }
+
+                // Handle cases where no valid data was added
+                if (lineSeriesExisting.Values.Count == 0)
+                {
+                    MessageBox.Show("No valid data available to display in the chart.");
+                }
             }
-        }       
+        }
+
+
 
 
         private void UpdateChart()
