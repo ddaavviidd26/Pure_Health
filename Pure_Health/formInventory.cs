@@ -179,6 +179,8 @@ namespace Pure_Health
                     // Create a command object
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
+                        command.CommandTimeout = 120; // Increase timeout to 120 seconds
+
                         // Add parameters to prevent SQL injection
                         command.Parameters.AddWithValue("@Text1", text1);
                         command.Parameters.AddWithValue("@Text2", text2);

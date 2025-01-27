@@ -76,6 +76,7 @@
             // 
             // pieChart1
             // 
+            this.pieChart1.Font = new System.Drawing.Font("Cambria", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.pieChart1.Location = new System.Drawing.Point(19, 32);
             this.pieChart1.Name = "pieChart1";
             this.pieChart1.Size = new System.Drawing.Size(362, 313);
@@ -103,6 +104,7 @@
             // 
             // cartesianChart1
             // 
+            this.cartesianChart1.Font = new System.Drawing.Font("Cambria", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cartesianChart1.Location = new System.Drawing.Point(24, 42);
             this.cartesianChart1.Name = "cartesianChart1";
             this.cartesianChart1.Size = new System.Drawing.Size(482, 303);
@@ -116,7 +118,7 @@
             this.panel4.Controls.Add(this.label8);
             this.panel4.Controls.Add(this.pictureBox2);
             this.panel4.Controls.Add(this.label3);
-            this.panel4.Location = new System.Drawing.Point(523, 86);
+            this.panel4.Location = new System.Drawing.Point(539, 86);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(182, 184);
             this.panel4.TabIndex = 54;
@@ -160,7 +162,7 @@
             this.panel5.Controls.Add(this.label7);
             this.panel5.Controls.Add(this.pictureBox5);
             this.panel5.Controls.Add(this.label2);
-            this.panel5.Location = new System.Drawing.Point(268, 86);
+            this.panel5.Location = new System.Drawing.Point(289, 86);
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(182, 184);
             this.panel5.TabIndex = 56;
@@ -206,7 +208,7 @@
             this.panel6.Controls.Add(this.pictureBox1);
             this.panel6.Location = new System.Drawing.Point(26, 86);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(182, 184);
+            this.panel6.Size = new System.Drawing.Size(206, 184);
             this.panel6.TabIndex = 53;
             // 
             // label4

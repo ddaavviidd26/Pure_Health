@@ -193,6 +193,8 @@ namespace Pure_Health
                             connection.Open();
                             using (SqlCommand command = new SqlCommand(query, connection))
                             {
+                                command.CommandTimeout = 120; // Increase timeout to 120 seconds
+
                                 command.Parameters.AddWithValue("@Username", username);
                                 int rowsAffected = command.ExecuteNonQuery();
 

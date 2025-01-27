@@ -217,6 +217,7 @@ else
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
+
                     using (SqlTransaction transaction = connection.BeginTransaction())
                     {
                         try
@@ -224,6 +225,8 @@ else
                             // Insert into Table_4
                             using (SqlCommand command = new SqlCommand(insertQuery, connection, transaction))
                             {
+                                command.CommandTimeout = 120; // Increase timeout to 120 seconds
+
                                 command.Parameters.AddWithValue("@Text1", text1);
                                 command.Parameters.AddWithValue("@Text2", text2);
                                 command.Parameters.AddWithValue("@Text6", priceValue);
@@ -237,6 +240,8 @@ else
                             // Update or Insert into Table_6
                             using (SqlCommand command = new SqlCommand(updateTable6Query, connection, transaction))
                             {
+                                command.CommandTimeout = 120; // Increase timeout to 120 seconds
+
                                 command.Parameters.AddWithValue("@DateToday", dateToday);
                                 command.Parameters.AddWithValue("@Price", priceValue);
                                 command.Parameters.AddWithValue("@UTZCount", utzCount);
@@ -278,6 +283,7 @@ else
             {
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
+
                     connection.Open();
                     SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
                     DataTable dataTable = new DataTable();
@@ -422,5 +428,31 @@ else
 
 
         }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (dataGridView1.SelectedRows.Count > 0)
+            {
+                // Populate controls with selected row's data
+                textBox1.Text = dataGridView1.SelectedRows[0].Cells["Patient name"].Value.ToString();
+                textBox2.Text = dataGridView1.SelectedRows[0].Cells["Contact no."].Value.ToString();
+                dateTimePicker1.Value = Convert.ToDateTime(dataGridView1.SelectedRows[0].Cells["Schedule time"].Value);
+               
+                comboBox1.SelectedItem = dataGridView1.SelectedRows[0].Cells["Test to conduct"].Value.ToString();
+                comboBox2.SelectedItem = dataGridView1.SelectedRows[0].Cells["Doctor"].Value.ToString();
+
+                MessageBox.Show("Data loaded for editing.");
+            }
+            else
+            {
+                MessageBox.Show("Please select a row to edit.");
+            }
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
-}
+    }
+

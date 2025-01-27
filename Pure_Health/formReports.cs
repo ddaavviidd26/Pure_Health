@@ -177,6 +177,8 @@ namespace Pure_Health
                         connection.Open();
                         using (SqlCommand command = new SqlCommand(queryTotals, connection))
                         {
+                            command.CommandTimeout = 120; // Increase timeout to 120 seconds
+
                             using (SqlDataReader reader = command.ExecuteReader())
                             {
                                 if (reader.Read())
@@ -229,10 +231,13 @@ namespace Pure_Health
                 {
                     using (SqlConnection connection = new SqlConnection(connectionString))
                     {
+
                         connection.Open();
 
                         using (SqlCommand command = new SqlCommand(deleteQuery, connection))
                         {
+                            command.CommandTimeout = 120; // Increase timeout to 120 seconds
+
                             int rowsAffected = command.ExecuteNonQuery();
 
                             MessageBox.Show(

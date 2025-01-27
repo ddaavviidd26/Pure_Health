@@ -26,7 +26,7 @@ namespace Pure_Health
             updateTimer = new Timer();
             updateTimer.Interval = 5000; // Refresh every 5 seconds
             updateTimer.Tick += UpdateTimer_Tick;
-        }
+        }   
         private Timer updateTimer;
         private Timer realTimeUpdateTimer;
         private (int utz, int lab, int xray, int ecg, int echo) GetTestCountsFromDatabase()
@@ -83,7 +83,7 @@ namespace Pure_Health
 
             // Set up the timer for Cartesian chart updates
             Timer chartUpdateTimer = new Timer();
-            chartUpdateTimer.Interval = 5000; // Update every 5 seconds
+            chartUpdateTimer.Interval = 5000; // Update every 10 seconds
             chartUpdateTimer.Tick += ChartUpdateTimer_Tick;
             chartUpdateTimer.Start();
             
@@ -91,7 +91,7 @@ namespace Pure_Health
 
             // Set up the Timer for periodic updates
             realTimeUpdateTimer = new Timer();
-            realTimeUpdateTimer.Interval = 5000; // Refresh every 5 seconds
+            realTimeUpdateTimer.Interval = 5000; // Refresh every 10 seconds
             realTimeUpdateTimer.Tick += RealTimeUpdateTimer_Tick;
             realTimeUpdateTimer.Start();
 
@@ -240,7 +240,7 @@ namespace Pure_Health
                 // Handle cases where no valid data was added
                 if (lineSeriesExisting.Values.Count == 0)
                 {
-                    MessageBox.Show("No valid data available to display in the chart.");
+                    
                 }
             }
         }

@@ -17,6 +17,7 @@ namespace Pure_Health
         public Form1()
         {
             InitializeComponent();
+
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
@@ -47,9 +48,8 @@ namespace Pure_Health
         {
 {
                 // Connection string - Replace placeholders with actual values
-                string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
+                string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";               
                 
-
                 // Get input from textboxes
                 string username = Username.Text.Trim();
             string password = Password.Text.Trim();
@@ -69,7 +69,9 @@ namespace Pure_Health
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        // Add parameters to prevent SQL Injection
+                        command.CommandTimeout = 120; // Increase timeout to 120 seconds
+                           
+
                         command.Parameters.AddWithValue("@Username", username);
                         command.Parameters.AddWithValue("@Password", password);
 
