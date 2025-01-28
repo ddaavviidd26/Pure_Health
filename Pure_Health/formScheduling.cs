@@ -453,6 +453,66 @@ else
         {
 
         }
+
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
+            string searchTerm = txtSearch.Text.Trim();
+
+            if (string.IsNullOrEmpty(searchTerm))
+            {
+                (dataGridView1.DataSource as DataTable).DefaultView.RowFilter = string.Empty;
+                MessageBox.Show("Please enter a search term.", "Input Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+            }
+            else
+            {
+                (dataGridView1.DataSource as DataTable).DefaultView.RowFilter =
+            string.Format("[Patient name] LIKE '%{0}%'",
+            searchTerm);
+            }
+
+            string query = "SELECT * FROM dbo.Table_4  WHERE 1=1"; // Start with a base condition
+
+            // Check if the search term is numeric (ID search)
+            if (int.TryParse(searchTerm, out int id))
+            {
+                query += " AND ID = @ID"; // Search by ID
+            }
+            else
+            {
+                query += " AND ([Patient name] LIKE @SearchTerm)"; // Search by Name, Address, or Gender
+            }
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    // Add parameters
+                    cmd.Parameters.AddWithValue("@SearchTerm", "%" + searchTerm + "%"); // Search term for Name, Address, and Gender
+
+                    // If the search term is numeric, add it for ID
+                    if (query.Contains("ID"))
+                    {
+                        cmd.Parameters.AddWithValue("@ID", searchTerm); // Use the numeric search term for ID
+                    }
+
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                    DataTable dt = new DataTable();
+                    adapter.Fill(dt);
+
+                    dataGridView1.DataSource = dt;
+
+                    if (dt.Rows.Count == 0)
+                    {
+                        MessageBox.Show("No records found matching the search criteria.", "Search Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+            }
+
+        }
     }
-    }
+}
+    
+   
 

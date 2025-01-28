@@ -98,13 +98,13 @@
             this.panel2.Controls.Add(this.cartesianChart1);
             this.panel2.Location = new System.Drawing.Point(451, 314);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(533, 371);
+            this.panel2.Size = new System.Drawing.Size(514, 371);
             this.panel2.TabIndex = 3;
             this.panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.panel2_Paint);
             // 
             // cartesianChart1
             // 
-            this.cartesianChart1.Font = new System.Drawing.Font("Cambria", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cartesianChart1.Font = new System.Drawing.Font("Cambria", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cartesianChart1.Location = new System.Drawing.Point(24, 42);
             this.cartesianChart1.Name = "cartesianChart1";
             this.cartesianChart1.Size = new System.Drawing.Size(482, 303);

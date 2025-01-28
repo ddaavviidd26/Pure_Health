@@ -82,6 +82,7 @@
             this.btnSearch.TabIndex = 54;
             this.btnSearch.Text = "Search";
             this.btnSearch.UseVisualStyleBackColor = true;
+            this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
             // 
             // button4
             // 
@@ -141,7 +142,9 @@
             this.comboBox2.Font = new System.Drawing.Font("Cambria", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.comboBox2.FormattingEnabled = true;
             this.comboBox2.Items.AddRange(new object[] {
-            "Dr. Rubio"});
+            "DR. RUBIO",
+            "DR. TUATIS",
+            "DR. MAURICIO"});
             this.comboBox2.Location = new System.Drawing.Point(379, 174);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(168, 23);
