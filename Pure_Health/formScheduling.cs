@@ -197,6 +197,11 @@ else
 
                 DateTime dateValue = dateTimePicker1.Value; // Schedule Time
                 DateTime dateToday = DateTime.Now.Date; // Today's Date
+                if (dateValue < DateTime.Today)
+                {
+                    MessageBox.Show("You cannot record data for past dates. Please select a future date.", "Invalid Date", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return; // Exit method if the date is in the past
+                }
 
                 string combo1 = comboBox1.SelectedItem?.ToString() ?? ""; // Test to Conduct
                 string combo2 = comboBox2.SelectedItem?.ToString() ?? ""; // Doctor
@@ -509,6 +514,11 @@ else
                     }
                 }
             }
+
+        }
+
+        private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
+        {
 
         }
     }

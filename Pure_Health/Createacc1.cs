@@ -47,11 +47,20 @@ namespace Pure_Health
             string password = Password.Text.Trim();
             string email = textBox1.Text.Trim();
 
+            // Validate email format
             if (!email.Contains("@"))
             {
                 MessageBox.Show("Please enter a valid email address.", "Invalid Email", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return; // Exit the method if the email is not valid
             }
+
+            // Validate password length (minimum 8 characters)
+            if (password.Length < 8)
+            {
+                MessageBox.Show("Password must be at least 8 characters long!", "Weak Password", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return; // Exit the method if the password is too short
+            }
+
             // Prompt for Purehealth code
             string enteredCode = Prompt.ShowDialog("Enter Purehealth Code", "Authentication");
 
@@ -64,6 +73,7 @@ namespace Pure_Health
                 return; // Exit the method if the code is invalid
             }
 
+            // Connection string
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
             string query = "INSERT INTO dbo.Table_7 (Username, Password, Email) VALUES (@Username, @Password, @Email)";
 
@@ -75,24 +85,24 @@ namespace Pure_Health
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@Username", username);
-                        command.Parameters.AddWithValue("@Password", password);
+                        command.Parameters.AddWithValue("@Password", password); // Consider using hashing for security
                         command.Parameters.AddWithValue("@Email", email);
                         command.ExecuteNonQuery();
                     }
                 }
 
                 MessageBox.Show("Account created successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                
+
                 // Close the form and return DialogResult.OK to indicate success
                 this.DialogResult = DialogResult.OK;
                 this.Close();
-                
             }
             catch (Exception ex)
             {
                 // Handle exceptions gracefully
                 MessageBox.Show("An error occurred while creating the account: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
         }
 
         public static class Prompt

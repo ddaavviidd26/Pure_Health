@@ -79,13 +79,19 @@ namespace Pure_Health
                     return;
                 }
 
-                // Validate username and password inputs
+                // Validate username, password, and email inputs
                 if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(email))
                 {
                     MessageBox.Show("Username, Password, and Email cannot be empty!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
+                // Check if the password is at least 8 characters long
+                if (password.Length < 8)
+                {
+                    MessageBox.Show("Password must be at least 8 characters long!", "Weak Password", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
                 // SQL query to insert new user
                 string query = "INSERT INTO dbo.Table_7 (Username, Password, Email) VALUES (@Username, @Password, @Email)";
@@ -100,8 +106,8 @@ namespace Pure_Health
                         {
                             // Add parameters to prevent SQL Injection
                             command.Parameters.AddWithValue("@Username", username);
-                            command.Parameters.AddWithValue("@Password", password);
-                            command.Parameters.AddWithValue("@Email", email);// Note: Use hashing for password security
+                            command.Parameters.AddWithValue("@Password", password); // Note: Use hashing for password security
+                            command.Parameters.AddWithValue("@Email", email);
 
                             int result = command.ExecuteNonQuery();
 
@@ -109,7 +115,7 @@ namespace Pure_Health
                             {
                                 MessageBox.Show("Account created successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                 this.Close(); // Close the form after successful creation
-                                
+
                                 Form1 form1 = new Form1();
                                 form1.Show();
                                 this.Hide();
@@ -126,6 +132,7 @@ namespace Pure_Health
                     }
                 }
             }
+
         }
 
         private void label2_MouseLeave(object sender, EventArgs e)
