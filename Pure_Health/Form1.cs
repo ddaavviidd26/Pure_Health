@@ -104,17 +104,7 @@ namespace Pure_Health
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            Username.Text = "Enter Username";
-            Username.ForeColor = Color.Gray;
-
-            Password.Text = "Enter Password";
-            Password.ForeColor = Color.Gray;
-
-            Username.Enter += Username_Enter;
-            Username.Leave += Username_Leave;
-
-            Password.Enter += Password_Enter;
-            Password.Leave += Password_Leave;
+            
         }
 
         private void Username_TextChanged(object sender, EventArgs e)

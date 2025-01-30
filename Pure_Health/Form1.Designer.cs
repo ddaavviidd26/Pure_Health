@@ -126,6 +126,7 @@
             this.Password.Location = new System.Drawing.Point(54, 252);
             this.Password.Multiline = true;
             this.Password.Name = "Password";
+            this.Password.PasswordChar = '◉';
             this.Password.Size = new System.Drawing.Size(249, 24);
             this.Password.TabIndex = 8;
             this.Password.Enter += new System.EventHandler(this.Password_Enter);

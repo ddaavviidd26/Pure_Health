@@ -9,7 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Pure_Health
 {
@@ -17,11 +16,10 @@ namespace Pure_Health
     public partial class formPatient : Form
     {
 
-
+        private string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
         public formPatient()
         {
-            InitializeComponent();
-            CustomizeSearchButton();
+            InitializeComponent();        
             this.Paint += Form1_Paint;
             this.Load += formPatient_Load;
             Anchor = AnchorStyles.Bottom | AnchorStyles.Right | AnchorStyles.Left;
@@ -29,6 +27,10 @@ namespace Pure_Health
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridView1.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
             dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            textBox4.TextChanged += ValidateAge;
+            textBox3.TextChanged += ValidateContactNumber;
+            LoadPatientData(""); // Load all data initially
+            txtSearch.TextChanged += TxtSearch_TextChanged;
 
         }
         private void Form1_Paint(object sender, PaintEventArgs e)
@@ -88,9 +90,49 @@ namespace Pure_Health
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView1.MultiSelect = false;
         }
-        
-        private void formPatient_Load(object sender, EventArgs e)
+        private void TxtSearch_TextChanged(object sender, EventArgs e)
         {
+            string searchTerm = txtSearch.Text.Trim();
+            LoadPatientData(searchTerm);
+        }
+        private void LoadPatientData(string searchTerm)
+        {
+            string query = "SELECT * FROM dbo.Table_1 WHERE 1=1";
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                if (int.TryParse(searchTerm, out _))
+                {
+                    query += " AND ID = @SearchTerm"; // Numeric ID search
+                }
+                else
+                {
+                    query += " AND ([Patient name] LIKE @SearchTerm OR Address LIKE @SearchTerm OR Gender LIKE @SearchTerm OR [Date today] LIKE @SearchTerm)";
+                }
+            }
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    if (!string.IsNullOrWhiteSpace(searchTerm))
+                    {
+                        cmd.Parameters.AddWithValue("@SearchTerm", searchTerm.All(char.IsDigit) ? searchTerm : $"%{searchTerm}%");
+                    }
+
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                    DataTable dt = new DataTable();
+                    adapter.Fill(dt);
+
+                    dataGridView1.DataSource = dt;
+                }
+            }
+        }
+    
+    private void formPatient_Load(object sender, EventArgs e)
+        {
+            textBox4.ForeColor = Color.Black;
+            textBox3.ForeColor = Color.Black;
             comboBox1.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
             comboBox1.AutoCompleteSource = AutoCompleteSource.ListItems;
 
@@ -132,8 +174,32 @@ namespace Pure_Health
         // Enable DataGridView Editing (Set in Form Load or Constructor)
 
         // Event: Auto-Save Data When User Edits a Cell
-       
 
+        private void ValidateAge(object sender, EventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            if (!int.TryParse(textBox.Text, out _)) // If not a number
+            {
+                textBox.ForeColor = Color.Red;
+            }
+            else
+            {
+                textBox.ForeColor = Color.Black;
+            }
+        }
+
+        private void ValidateContactNumber(object sender, EventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            if (!System.Text.RegularExpressions.Regex.IsMatch(textBox.Text, @"^\d{10,12}$")) // 10-12 digit number
+            {
+                textBox.ForeColor = Color.Red;
+            }
+            else
+            {
+                textBox.ForeColor = Color.Black;
+            }
+        }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -215,7 +281,16 @@ namespace Pure_Health
                         MessageBox.Show("Invalid price entered. Please enter a valid numeric value for the price.");
                         return;
                     }
-
+                    if (!long.TryParse(text3, out _) || text3.Length != 10)
+                    {
+                        MessageBox.Show("Invalid Contact Number. Please enter exactly 10 digits.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    if (!int.TryParse(text4, out int ageValue) || text4.Length > 3)
+                    {
+                        MessageBox.Show("Invalid Age. Please enter a valid number with a maximum of 3 digits.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
                     // Split multiline input in textBox7 into individual categories
                     string[] categories = textBox7.Text
                         .Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries)
@@ -687,30 +762,7 @@ namespace Pure_Health
                 MessageBox.Show("An error occurred while updating the record: " + ex.Message);
             }
         }
-        private void CustomizeSearchButton()
-        {
-            // Set button properties
-            btnSearch.Text = "Search";
-            btnSearch.Font = new Font("Cambria", 14, FontStyle.Bold);
-            btnSearch.ForeColor = Color.White;
-            btnSearch.BackColor = Color.FromArgb(104, 141, 94); // Modern green color
-            btnSearch.FlatStyle = FlatStyle.Flat;
-            btnSearch.FlatAppearance.BorderSize = 0; // Remove border
-            btnSearch.FlatAppearance.MouseOverBackColor = Color.FromArgb(81, 111, 72); // Darker green on hover
-            btnSearch.FlatAppearance.MouseDownBackColor = Color.FromArgb(60, 85, 55); // Even darker green on click
-            btnSearch.Size = new Size(100, 40); // Set button size
-            btnSearch.Cursor = Cursors.Hand; // Hand cursor on hover
-
-            txtSearch.BorderStyle = BorderStyle.None; // Remove default border
-            txtSearch.Font = new Font("Cambria", 16, FontStyle.Regular);
-            txtSearch.ForeColor = Color.FromArgb(74, 54, 35); // Light brown color for text
-            txtSearch.BackColor = Color.FromArgb(231, 224, 202); // Soft beige background
-            txtSearch.Size = new Size(100, 35); // Set size of the text box
-            txtSearch.Padding = new Padding(10, 5, 10, 5); // Padding to give it a modern feel
-            txtSearch.Cursor = Cursors.IBeam; // Text cursor when typing
-            txtSearch.TextAlign = HorizontalAlignment.Left; // Text alignment
-            txtSearch.MaxLength = 60; // Set a maximum character limit
-        }
+        
 
         private void button5_Click(object sender, EventArgs e)
         {

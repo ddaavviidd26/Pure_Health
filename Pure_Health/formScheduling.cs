@@ -199,7 +199,7 @@ else
                 DateTime dateToday = DateTime.Now.Date; // Today's Date
                 if (dateValue < DateTime.Today)
                 {
-                    MessageBox.Show("You cannot record data for past dates. Please select a future date.", "Invalid Date", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Invalid Date", "Invalid Date", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return; // Exit method if the date is in the past
                 }
 
