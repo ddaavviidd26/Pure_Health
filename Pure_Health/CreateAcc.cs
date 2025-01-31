@@ -32,8 +32,7 @@ namespace Pure_Health
 
             textBox2.Text = "Enter Purehealth code";
             textBox2.ForeColor = Color.Gray;
-
-            Password.Text = "Enter Password";
+           
             Password.ForeColor = Color.Gray;
 
             Username.Text = "Enter Username";
@@ -44,9 +43,7 @@ namespace Pure_Health
 
             textBox1.Enter += textBox1_Enter;
             textBox1.Leave += textBox1_Leave;
-
-            Password.Enter += Password_Enter;
-            Password.Leave += Password_Leave;
+           
 
             Username.Enter += Username_Enter;
             Username.Leave += Username_Leave;
@@ -190,20 +187,12 @@ namespace Pure_Health
 
         private void Password_Enter(object sender, EventArgs e)
         {
-            if (Password.Text == "Enter Password")
-            {
-                Password.Text = "";
-               
-            }
+            
         }
 
         private void Password_Leave(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(Password.Text))
-            {
-                Password.Text = "Enter Password";
-                
-            }
+            
         }
 
         private void Username_Enter(object sender, EventArgs e)

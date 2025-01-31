@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -273,7 +274,24 @@ namespace Pure_Health
                     string text3 = textBox3.Text; // Contact no.
                     string text4 = textBox4.Text; // Age
                     string text5 = textBox5.Text; // Test to conduct
+                    if (string.IsNullOrWhiteSpace(text1))
+                    {
+                        MessageBox.Show("Patient name cannot be empty.");
+                        return;
+                    }
+                    // Ensure the name is not longer than 30 characters
+                    if (text1.Length > 30)
+                    {
+                        MessageBox.Show("Maximum 30 characters");
+                        return;
+                    }
 
+                    // Ensure only letters (no numbers or special characters) are present
+                    if (!Regex.IsMatch(text1, @"^[A-Za-z\s]+$"))
+                    {
+                        MessageBox.Show("Invalid Name");
+                        return;
+                    }
                     // Convert textBox6 value to a float for Price
                     string text6 = textBox6.Text;
                     if (!float.TryParse(text6, out float priceValue))
@@ -281,14 +299,19 @@ namespace Pure_Health
                         MessageBox.Show("Invalid price entered. Please enter a valid numeric value for the price.");
                         return;
                     }
-                    if (!long.TryParse(text3, out _) || text3.Length != 10)
+                    // Validate Contact No. (must be exactly 11 digits)
+                    if (!Regex.IsMatch(text3, @"^\d{10}$"))
                     {
-                        MessageBox.Show("Invalid Contact Number. Please enter exactly 10 digits.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("Invalid Contact Number. Please enter exactly 10 digits (numbers only).",
+                                        "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
-                    if (!int.TryParse(text4, out int ageValue) || text4.Length > 3)
+
+                    // Validate Age (must be numeric and max 3 digits)
+                    if (!Regex.IsMatch(text4, @"^\d{1,3}$"))
                     {
-                        MessageBox.Show("Invalid Age. Please enter a valid number with a maximum of 3 digits.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("Invalid Age. Please enter a valid number (1-999).",
+                                        "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
                     // Split multiline input in textBox7 into individual categories

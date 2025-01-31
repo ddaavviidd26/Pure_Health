@@ -37,6 +37,9 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.button1 = new System.Windows.Forms.Button();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
@@ -53,7 +56,7 @@
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Cambria", 24F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(161)));
             this.label4.ForeColor = System.Drawing.Color.Green;
-            this.label4.Location = new System.Drawing.Point(65, 19);
+            this.label4.Location = new System.Drawing.Point(56, 3);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(226, 37);
             this.label4.TabIndex = 16;
@@ -67,6 +70,7 @@
             this.newPass.Location = new System.Drawing.Point(33, 89);
             this.newPass.Multiline = true;
             this.newPass.Name = "newPass";
+            this.newPass.PasswordChar = '◉';
             this.newPass.Size = new System.Drawing.Size(280, 24);
             this.newPass.TabIndex = 14;
             this.newPass.TextChanged += new System.EventHandler(this.newPassword_TextChanged);
@@ -76,7 +80,7 @@
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.Green;
-            this.panel2.Location = new System.Drawing.Point(33, 182);
+            this.panel2.Location = new System.Drawing.Point(33, 181);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(280, 1);
             this.panel2.TabIndex = 11;
@@ -86,9 +90,10 @@
             this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox1.Font = new System.Drawing.Font("Cambria", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBox1.ForeColor = System.Drawing.Color.Green;
-            this.textBox1.Location = new System.Drawing.Point(33, 152);
+            this.textBox1.Location = new System.Drawing.Point(33, 151);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
+            this.textBox1.PasswordChar = '◉';
             this.textBox1.Size = new System.Drawing.Size(280, 24);
             this.textBox1.TabIndex = 17;
             this.textBox1.Enter += new System.EventHandler(this.textBox1_Enter);
@@ -99,9 +104,10 @@
             this.textBox3.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox3.Font = new System.Drawing.Font("Cambria", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBox3.ForeColor = System.Drawing.Color.Green;
-            this.textBox3.Location = new System.Drawing.Point(33, 217);
+            this.textBox3.Location = new System.Drawing.Point(33, 219);
             this.textBox3.Multiline = true;
             this.textBox3.Name = "textBox3";
+            this.textBox3.PasswordChar = '◉';
             this.textBox3.Size = new System.Drawing.Size(280, 24);
             this.textBox3.TabIndex = 19;
             this.textBox3.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
@@ -111,7 +117,7 @@
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.Color.Green;
-            this.panel3.Location = new System.Drawing.Point(33, 247);
+            this.panel3.Location = new System.Drawing.Point(33, 249);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(280, 1);
             this.panel3.TabIndex = 18;
@@ -123,7 +129,7 @@
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button1.Font = new System.Drawing.Font("Cambria", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button1.ForeColor = System.Drawing.Color.White;
-            this.button1.Location = new System.Drawing.Point(33, 270);
+            this.button1.Location = new System.Drawing.Point(33, 272);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(280, 33);
             this.button1.TabIndex = 20;
@@ -143,12 +149,48 @@
             this.pictureBox2.TabStop = false;
             this.pictureBox2.Click += new System.EventHandler(this.pictureBox2_Click);
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Cambria", 15.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(161)));
+            this.label1.ForeColor = System.Drawing.Color.Green;
+            this.label1.Location = new System.Drawing.Point(28, 61);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(206, 25);
+            this.label1.TabIndex = 22;
+            this.label1.Text = "Enter New Password";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Cambria", 15.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(161)));
+            this.label2.ForeColor = System.Drawing.Color.Green;
+            this.label2.Location = new System.Drawing.Point(28, 123);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(185, 25);
+            this.label2.TabIndex = 23;
+            this.label2.Text = "Confirm Password";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Cambria", 15.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(161)));
+            this.label3.ForeColor = System.Drawing.Color.Green;
+            this.label3.Location = new System.Drawing.Point(28, 185);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(224, 25);
+            this.label3.TabIndex = 24;
+            this.label3.Text = "Enter Purehealth Code";
+            // 
             // NewPasswordForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(351, 315);
+            this.ClientSize = new System.Drawing.Size(351, 331);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.textBox3);
@@ -180,5 +222,8 @@
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
     }
 }

@@ -24,8 +24,7 @@ namespace Pure_Health
         {
             textBox1.Text = "Enter Email Address";
             textBox1.ForeColor = Color.Gray;
-
-            Password.Text = "Enter Password";
+         
             Password.ForeColor = Color.Gray;
 
             Username.Text = "Enter Username";
@@ -210,20 +209,12 @@ namespace Pure_Health
 
         private void Password_Enter(object sender, EventArgs e)
         {
-            if (Password.Text == "Enter Password")
-            {
-                Password.Text = "";
-
-            }
+            
         }
 
         private void Password_Leave(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(Password.Text))
-            {
-                Password.Text = "Enter Password";
-
-            }
+           
         }
 
         private void Username_Enter(object sender, EventArgs e)

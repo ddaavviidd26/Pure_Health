@@ -25,9 +25,7 @@ namespace Pure_Health
         private void NewPasswordForm_Load(object sender, EventArgs e)
         {
             // Set initial placeholder text and color for each TextBox
-            SetPlaceholder(newPass, "Enter new password");
-            SetPlaceholder(textBox1, "Confirm password");
-            SetPlaceholder(textBox3, "Enter purehealth code");
+            
             this.ActiveControl = button1; // Replace 'label1' with any control that is not an input box
             // Attach event handlers for placeholders
             newPass.Enter += (s, ev) => RemovePlaceholder(newPass, "Enter new password");
