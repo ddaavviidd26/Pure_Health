@@ -8,18 +8,21 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+
 
 namespace Pure_Health
 {
+
     public partial class formEmployees : Form
     {
+        private string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
         public formEmployees()
         {
             InitializeComponent();
-            CustomizeSearchButton();
+            
             this.Paint += Form1_Paint;
             this.Load += formEmployees_Load;
             Anchor = AnchorStyles.Bottom | AnchorStyles.Right | AnchorStyles.Left;
@@ -27,11 +30,37 @@ namespace Pure_Health
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridView1.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
             dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            textBox3.TextChanged += ValidateAge;
+            textBox4.TextChanged += ValidateContactNumber;
 
+        }
+        private void ValidateAge(object sender, EventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            if (!int.TryParse(textBox.Text, out _)) // If not a number
+            {
+                textBox.ForeColor = Color.Red;
+            }
+            else
+            {
+                textBox.ForeColor = Color.Black;
+            }
+        }
+
+        private void ValidateContactNumber(object sender, EventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            if (!System.Text.RegularExpressions.Regex.IsMatch(textBox.Text, @"^\d{10,12}$")) // 10-12 digit number
+            {
+                textBox.ForeColor = Color.Red;
+            }
+            else
+            {
+                textBox.ForeColor = Color.Black;
+            }
         }
         private void CustomizeDataGridView()
         {
-
             // General Appearance
             dataGridView1.BackgroundColor = Color.FromArgb(242, 240, 230);
             dataGridView1.BorderStyle = BorderStyle.None;
@@ -66,30 +95,50 @@ namespace Pure_Health
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView1.MultiSelect = false;
-        }
-        private void CustomizeSearchButton()
-        {
-            // Set button properties
-            btnSearch.Text = "Search";
-            btnSearch.Font = new Font("Cambria", 14, FontStyle.Bold);
-            btnSearch.ForeColor = Color.White;
-            btnSearch.BackColor = Color.FromArgb(104, 141, 94); // Modern green color
-            btnSearch.FlatStyle = FlatStyle.Flat;
-            btnSearch.FlatAppearance.BorderSize = 0; // Remove border
-            btnSearch.FlatAppearance.MouseOverBackColor = Color.FromArgb(81, 111, 72); // Darker green on hover
-            btnSearch.FlatAppearance.MouseDownBackColor = Color.FromArgb(60, 85, 55); // Even darker green on click
-            btnSearch.Size = new Size(100, 40); // Set button size
-            btnSearch.Cursor = Cursors.Hand; // Hand cursor on hover
 
-            txtSearch.BorderStyle = BorderStyle.None; // Remove default border
-            txtSearch.Font = new Font("Cambria", 16, FontStyle.Regular);
-            txtSearch.ForeColor = Color.FromArgb(74, 54, 35); // Light brown color for text
-            txtSearch.BackColor = Color.FromArgb(231, 224, 202); // Soft beige background
-            txtSearch.Size = new Size(100, 35); // Set size of the text box
-            txtSearch.Padding = new Padding(10, 5, 10, 5); // Padding to give it a modern feel
-            txtSearch.Cursor = Cursors.IBeam; // Text cursor when typing
-            txtSearch.TextAlign = HorizontalAlignment.Left; // Text alignment
-            txtSearch.MaxLength = 60; // Set a maximum character limit
+            // Set the width of the "Id" column to 30
+            if (dataGridView1.Columns.Contains("Id"))
+            {
+                dataGridView1.Columns["Id"].Width = 30;
+            }
+        }
+        private void TxtSearch_TextChanged(object sender, EventArgs e)
+        {
+            string searchTerm = txtSearch.Text.Trim();
+            LoadPatientData(searchTerm);
+        }
+        private void LoadPatientData(string searchTerm)
+        {
+            string query = "SELECT * FROM dbo.Table_3 WHERE 1=1";
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                if (int.TryParse(searchTerm, out _))
+                {
+                    query += " AND ID = @SearchTerm"; // Numeric ID search
+                }
+                else
+                {
+                    query += " AND ([Employees name] LIKE @SearchTerm OR Address LIKE @SearchTerm OR Gender LIKE @SearchTerm OR Specialization LIKE @SearchTerm)";
+                }
+            }
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    if (!string.IsNullOrWhiteSpace(searchTerm))
+                    {
+                        cmd.Parameters.AddWithValue("@SearchTerm", searchTerm.All(char.IsDigit) ? searchTerm : $"%{searchTerm}%");
+                    }
+
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                    DataTable dt = new DataTable();
+                    adapter.Fill(dt);
+
+                    dataGridView1.DataSource = dt;
+                }
+            }
         }
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
@@ -111,6 +160,11 @@ namespace Pure_Health
         }
         private void formEmployees_Load(object sender, EventArgs e)
         {
+            
+            comboBox1.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            comboBox1.AutoCompleteSource = AutoCompleteSource.ListItems;
+            comboBox2.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            comboBox2.AutoCompleteSource = AutoCompleteSource.ListItems;
             this.ControlBox = false;
             CustomizeDataGridView();
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
@@ -155,13 +209,18 @@ namespace Pure_Health
 
         }
 
- 
+
         private void button5_Click(object sender, EventArgs e)
         {
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
-            string query = @"
-        INSERT INTO dbo.Table_3 ([Employees name], Address, Age, [Contact no.], Gender, Specialization, Birthdate, UniqueID) 
-        VALUES (@Text1, @Text2, @Text3, @Text4, @Combo1, @Combo2, @DateValue, @UniqueID)";
+            string insertQuery = @"
+        INSERT INTO dbo.Table_3 ([Employees name], Address, Age, [Contact no.], Gender, Specialization, Birthdate) 
+        VALUES (@Text1, @Text2, @Text3, @Text4, @Combo1, @Combo2, @DateValue)";
+            string updateQuery = @"
+        UPDATE dbo.Table_3
+        SET Address = @Text2, Age = @Text3, [Contact no.] = @Text4, Gender = @Combo1, Specialization = @Combo2, Birthdate = @DateValue
+        WHERE [Employees name] = @Text1";
+
             try
             {
                 // Gather input from TextBoxes
@@ -169,7 +228,39 @@ namespace Pure_Health
                 string text2 = textBox2.Text;
                 string text3 = textBox3.Text;
                 string text4 = textBox4.Text;
+                if (string.IsNullOrWhiteSpace(text1))
+                {
+                    MessageBox.Show("Patient name cannot be empty.");
+                    return;
+                }
+                // Ensure the name is not longer than 30 characters
+                if (text1.Length > 30)
+                {
+                    MessageBox.Show("Maximum 30 characters");
+                    return;
+                }
 
+                // Ensure only letters (no numbers or special characters) are present
+                if (!Regex.IsMatch(text1, @"^[A-Za-z\s]+$"))
+                {
+                    MessageBox.Show("Invalid Name");
+                    return;
+                }
+                // Validate Contact No. (must be exactly 10 digits)
+                if (!Regex.IsMatch(text4, @"^\d{10}$"))
+                {
+                    MessageBox.Show("Invalid Contact Number. Please enter exactly 10 digits (numbers only).",
+                                     "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Validate Age (must be numeric and max 3 digits)
+                if (!Regex.IsMatch(text3, @"^\d{1,3}$"))
+                {
+                    MessageBox.Show("Invalid Age. Please enter a valid number (1-999).",
+                                     "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
                 // Get value from DateTimePicker
                 DateTime dateValue = dateTimePicker1.Value;
 
@@ -186,11 +277,10 @@ namespace Pure_Health
                     return;
                 }
 
-                // Generate a unique ID
-                string uniqueID = GenerateUniqueID();
+                // Check if the employee already exists
+                bool employeeExists = CheckIfEmployeeExists(text1);
 
-                // Display the unique ID in the Label
-                label11.Text = $"{uniqueID}";
+                string query = employeeExists ? updateQuery : insertQuery;
 
                 // Create a connection to SQL Server
                 using (SqlConnection connection = new SqlConnection(connectionString))
@@ -211,7 +301,6 @@ namespace Pure_Health
                         command.Parameters.AddWithValue("@DateValue", dateValue);
                         command.Parameters.AddWithValue("@Combo1", combo1);
                         command.Parameters.AddWithValue("@Combo2", combo2);
-                        command.Parameters.AddWithValue("@UniqueID", uniqueID);
 
                         // Execute the command
                         int rowsAffected = command.ExecuteNonQuery();
@@ -219,7 +308,7 @@ namespace Pure_Health
                         // Provide feedback to the user
                         if (rowsAffected > 0)
                         {
-                            MessageBox.Show("Data saved successfully!");
+                            MessageBox.Show(employeeExists ? "Data updated successfully!" : "Data saved successfully!");
 
                             // Refresh the DataGridView
                             ReorganizeIDs();
@@ -229,7 +318,7 @@ namespace Pure_Health
                         }
                         else
                         {
-                            MessageBox.Show("Failed to save data.");
+                            MessageBox.Show("Failed to save or update data.");
                         }
                     }
                 }
@@ -240,40 +329,58 @@ namespace Pure_Health
                 MessageBox.Show("An error occurred: " + ex.Message);
             }
         }
+
+        private bool CheckIfEmployeeExists(string employeeName)
+        {
+            string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
+            string query = "SELECT COUNT(1) FROM dbo.Table_3 WHERE [Employees name] = @EmployeeName";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@EmployeeName", employeeName);
+                    int count = (int)command.ExecuteScalar();
+                    return count > 0;
+                }
+            }
+        }
+
         private void ReorganizeIDs()
         {
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
 
             string reorganizeQuery = @"
-        BEGIN TRANSACTION;
+BEGIN TRANSACTION;
 
-        -- Step 1: Create a temporary table with the same schema but without the IDENTITY property
-        SELECT ROW_NUMBER() OVER (ORDER BY Id) AS NewId, [Employees name], Address, Age, [Contact no.], Gender, Specialization, Birthdate, UniqueID
-        INTO #TempTable
-        FROM dbo.Table_3;
+-- Step 1: Create a temporary table with the same schema but without the IDENTITY property
+SELECT ROW_NUMBER() OVER (ORDER BY Id) AS NewId, [Employees name], Address, Age, [Contact no.], Gender, Specialization, Birthdate
+INTO #TempTable
+FROM dbo.Table_3;
 
-        -- Step 2: Disable identity insert on the original table
-        SET IDENTITY_INSERT dbo.Table_3 ON;
+-- Step 2: Disable identity insert on the original table
+SET IDENTITY_INSERT dbo.Table_3 ON;
 
-        -- Step 3: Truncate the original table
-        TRUNCATE TABLE dbo.Table_3;
+-- Step 3: Truncate the original table
+TRUNCATE TABLE dbo.Table_3;
 
-        -- Step 4: Insert the data back into the original table with sequential IDs
-        INSERT INTO dbo.Table_3 (Id,[Employees name], Address, Age, [Contact no.], Gender, Specialization, Birthdate, UniqueID)
-        SELECT NewId, [Employees name], Address, Age, [Contact no.], Gender, Specialization, Birthdate, UniqueID
-        FROM #TempTable;
+-- Step 4: Insert the data back into the original table with sequential IDs
+INSERT INTO dbo.Table_3 (Id, [Employees name], Address, Age, [Contact no.], Gender, Specialization, Birthdate)
+SELECT NewId, [Employees name], Address, Age, [Contact no.], Gender, Specialization, Birthdate
+FROM #TempTable;
 
-        -- Step 5: Drop the temporary table
-        DROP TABLE #TempTable;
+-- Step 5: Drop the temporary table
+DROP TABLE #TempTable;
 
-        -- Step 6: Reset the identity seed
-        DBCC CHECKIDENT ('dbo.Table_3', RESEED, 0);
+-- Step 6: Reset the identity seed to 1 (or desired value)
+DBCC CHECKIDENT ('dbo.Table_3', RESEED, 1);
 
-        -- Step 7: Re-enable identity insert
-        SET IDENTITY_INSERT dbo.Table_3 OFF;
+-- Step 7: Re-enable identity insert
+SET IDENTITY_INSERT dbo.Table_3 OFF;
 
-        COMMIT TRANSACTION;
-    ";
+COMMIT TRANSACTION;
+";
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -285,12 +392,8 @@ namespace Pure_Health
                 }
             }
         }
-        private string GenerateUniqueID()
-        {
-            // Generate a unique ID using a timestamp and random number
-            string randomPart = new Random().Next(10000, 99999).ToString();
-            return $"{randomPart}";
-        }
+
+        
         private void LoadDataIntoDataGridView()
         {
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
@@ -418,12 +521,13 @@ namespace Pure_Health
                 // Populate controls with selected row's data
                 textBox1.Text = dataGridView1.SelectedRows[0].Cells["Employees name"].Value.ToString();
                 textBox2.Text = dataGridView1.SelectedRows[0].Cells["Address"].Value.ToString();
-                textBox3.Text = dataGridView1.SelectedRows[0].Cells["Contact no."].Value.ToString();
-                textBox4.Text = dataGridView1.SelectedRows[0].Cells["Age"].Value.ToString();
+                textBox3.Text = dataGridView1.SelectedRows[0].Cells["Age"].Value.ToString();
+                textBox4.Text = dataGridView1.SelectedRows[0].Cells["Contact no."].Value.ToString();
+                
                 dateTimePicker1.Value = Convert.ToDateTime(dataGridView1.SelectedRows[0].Cells["Birthdate"].Value);
                 comboBox1.SelectedItem = dataGridView1.SelectedRows[0].Cells["Gender"].Value.ToString();
                 comboBox2.SelectedItem = dataGridView1.SelectedRows[0].Cells["Specialization"].Value.ToString();
-                label11.Text = dataGridView1.SelectedRows[0].Cells["UniqueID"].Value.ToString();
+                
 
                 MessageBox.Show("Data loaded for editing.");
             }
@@ -489,6 +593,12 @@ namespace Pure_Health
                 }
             }
 
+        }
+
+        private void txtSearch_TextChanged_1(object sender, EventArgs e)
+        {
+            string searchTerm = txtSearch.Text.Trim();
+            LoadPatientData(searchTerm);
         }
     }
     }

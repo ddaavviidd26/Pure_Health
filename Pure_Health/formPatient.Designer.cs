@@ -240,7 +240,7 @@
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(168, 23);
             this.textBox3.TabIndex = 15;
-            this.textBox3.Text = "s";
+            this.textBox3.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
             // 
             // textBox4
             // 
@@ -459,9 +459,9 @@
             this.label12.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.label12.Location = new System.Drawing.Point(17, 236);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(82, 28);
+            this.label12.Size = new System.Drawing.Size(88, 28);
             this.label12.TabIndex = 33;
-            this.label12.Text = "Search";
+            this.label12.Text = "Search:";
             // 
             // formPatient
             // 

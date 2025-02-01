@@ -15,6 +15,7 @@ namespace Pure_Health
 {
     public partial class formInventory : Form
     {
+        private string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
         public formInventory()
         {
 
@@ -141,20 +142,18 @@ namespace Pure_Health
         private void button2_Click(object sender, EventArgs e)
         {
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
-            string query = @"
-        INSERT INTO dbo.Table_2 ([Supply name], Description, Quantity) 
-        VALUES (@Text1, @Text2,@Text4)";
+
             try
             {
                 // Gather input from TextBoxes
-                string text1 = textBox1.Text;
-                string text2 = textBox2.Text;             
-                string text4 = textBox4.Text;
+                string text1 = textBox1.Text; // Supply name
+                string text2 = textBox2.Text; // Description
+                string text4 = textBox4.Text; // Quantity
 
+                // Validate quantity
                 if (!Regex.IsMatch(text4, @"^\d+$"))
                 {
-                    MessageBox.Show("Invalid. Only numbers are allowed.",
-                                    "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Invalid. Only numbers are allowed.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -163,13 +162,25 @@ namespace Pure_Health
                     MessageBox.Show("Please fill in all required fields.");
                     return;
                 }
-                // Create a connection to SQL Server
+
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-                    // Open the connection
                     connection.Open();
 
-                    // Create a command object
+                    // SQL query to check and update or insert
+                    string query = @"
+                IF EXISTS (SELECT 1 FROM dbo.Table_2 WHERE [Supply name] = @Text1)
+                BEGIN
+                    UPDATE dbo.Table_2
+                     SET Description = @Text2, Quantity = @Text4
+                     WHERE [Supply name] = @Text1
+                END
+                ELSE
+                BEGIN
+                    INSERT INTO dbo.Table_2 ([Supply name], Description, Quantity) 
+                    VALUES (@Text1, @Text2, @Text4)
+                END";
+
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
                         command.CommandTimeout = 120; // Increase timeout to 120 seconds
@@ -177,24 +188,21 @@ namespace Pure_Health
                         // Add parameters to prevent SQL injection
                         command.Parameters.AddWithValue("@Text1", text1);
                         command.Parameters.AddWithValue("@Text2", text2);
-                        
-                        command.Parameters.AddWithValue("@Text4", text4);
-                        
+                        command.Parameters.AddWithValue("@Text4", int.Parse(text4)); // Ensure Quantity is an integer
 
                         // Execute the command
                         int rowsAffected = command.ExecuteNonQuery();
-                        
+
                         // Provide feedback to the user
                         if (rowsAffected > 0)
                         {
-                            MessageBox.Show("Data saved successfully!");
+                            MessageBox.Show("Data updated successfully!");
 
                             // Refresh the DataGridView
                             ReorganizeIDs();
                             LoadDataIntoDataGridView();
 
                             ClearInputFields();
-
                         }
                         else
                         {
@@ -209,6 +217,7 @@ namespace Pure_Health
                 MessageBox.Show("An error occurred: " + ex.Message);
             }
         }
+
         private void LoadDataIntoDataGridView()
         {
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
@@ -329,46 +338,59 @@ namespace Pure_Health
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
 
             string reorganizeQuery = @"
-        BEGIN TRANSACTION;
+    BEGIN TRANSACTION;
 
-        -- Step 1: Create a temporary table with the same schema but without the IDENTITY property
-        SELECT ROW_NUMBER() OVER (ORDER BY Id) AS NewId, [Supply name], Description, Quantity 
-        INTO #TempTable
-        FROM dbo.Table_2;
+    -- Step 1: Create a temporary table with sequential IDs
+    WITH Renumbered AS (
+        SELECT 
+            ROW_NUMBER() OVER (ORDER BY ID) AS NewId, 
+            [Supply name], Description, Quantity
+        FROM dbo.Table_2
+    )
+    SELECT * INTO #TempTable FROM Renumbered;
 
-        -- Step 2: Disable identity insert on the original table
-        SET IDENTITY_INSERT dbo.Table_2 ON;
+    -- Step 2: Delete all records from the original table
+    DELETE FROM dbo.Table_2;
 
-        -- Step 3: Truncate the original table
-        TRUNCATE TABLE dbo.Table_2;
+    -- Step 3: Reset identity to 0
+    DBCC CHECKIDENT ('dbo.Table_2', RESEED, 0);
 
-        -- Step 4: Insert the data back into the original table with sequential IDs
-        INSERT INTO dbo.Table_2 (ID, [Supply name], Description, Quantity)
-        SELECT NewId,  [Supply name], Description,  Quantity
-        FROM #TempTable;
+    -- Step 4: Enable identity insert to manually insert new IDs
+    SET IDENTITY_INSERT dbo.Table_2 ON;
 
-        -- Step 5: Drop the temporary table
-        DROP TABLE #TempTable;
+    -- Step 5: Insert the renumbered data
+    INSERT INTO dbo.Table_2 (ID, [Supply name], Description, Quantity)
+    SELECT NewId, [Supply name], Description, Quantity
+    FROM #TempTable;
 
-        -- Step 6: Reset the identity seed
-        DBCC CHECKIDENT ('dbo.Table_2', RESEED, 0);
+    -- Step 6: Disable identity insert
+    SET IDENTITY_INSERT dbo.Table_2 OFF;
 
-        -- Step 7: Re-enable identity insert
-        SET IDENTITY_INSERT dbo.Table_2 OFF;
+    -- Step 7: Drop the temporary table
+    DROP TABLE #TempTable;
 
-        COMMIT TRANSACTION;
-    ";
+    COMMIT TRANSACTION;
+";
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            try
             {
-                connection.Open();
-
-                using (SqlCommand command = new SqlCommand(reorganizeQuery, connection))
+                using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-                    command.ExecuteNonQuery();
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(reorganizeQuery, connection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred during reorganization: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
+
+
 
         private void button4_Click(object sender, EventArgs e)
         {
@@ -394,6 +416,52 @@ namespace Pure_Health
         {
 
         }
+
+        private void txtSearch_TextChanged(object sender, EventArgs e)
+        {
+            string searchTerm = txtSearch.Text.Trim();
+            LoadPatientData(searchTerm);
+        }
+        private void LoadPatientData(string searchTerm)
+        {
+            string query = "SELECT * FROM dbo.Table_2 WHERE 1=1";
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                if (int.TryParse(searchTerm, out _))
+                {
+                    query += " AND ID = @SearchTerm"; // Numeric ID search
+                }
+                else
+                {
+                    query += " AND [Supply name] LIKE @SearchTerm"; // Fix the syntax
+                }
+            }
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    if (!string.IsNullOrWhiteSpace(searchTerm))
+                    {
+                        if (int.TryParse(searchTerm, out _))
+                        {
+                            cmd.Parameters.AddWithValue("@SearchTerm", searchTerm);
+                        }
+                        else
+                        {
+                            cmd.Parameters.AddWithValue("@SearchTerm", $"%{searchTerm}%"); // Use wildcard for LIKE search
+                        }
+                    }
+
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                    DataTable dt = new DataTable();
+                    adapter.Fill(dt);
+
+                    dataGridView1.DataSource = dt;
+                }
+            }
+        }
     }
-        }    
+}    
 

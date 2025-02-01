@@ -23,9 +23,9 @@ namespace Pure_Health
             InitializeComponent();        
             this.Paint += Form1_Paint;
             this.Load += formPatient_Load;
-            Anchor = AnchorStyles.Bottom | AnchorStyles.Right | AnchorStyles.Left;
-            dataGridView1.DefaultCellStyle.ForeColor = Color.Black;
-            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            Anchor = AnchorStyles.Bottom | AnchorStyles.Right | AnchorStyles.Left;     
+            dataGridView1.DefaultCellStyle.ForeColor = Color.Black;         
+            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             dataGridView1.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
             dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             textBox4.TextChanged += ValidateAge;
@@ -55,7 +55,7 @@ namespace Pure_Health
 
         private void CustomizeDataGridView()
         {
-
+            
             // General Appearance
             dataGridView1.BackgroundColor = Color.FromArgb(242, 240, 230);
             dataGridView1.BorderStyle = BorderStyle.None;
@@ -90,6 +90,10 @@ namespace Pure_Health
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView1.MultiSelect = false;
+
+            dataGridView1.Columns["Id"].Width = 30;
+            dataGridView1.Columns["Age"].Width = 50;
+            dataGridView1.Columns["Price"].Width = 61;
         }
         private void TxtSearch_TextChanged(object sender, EventArgs e)
         {
@@ -108,7 +112,7 @@ namespace Pure_Health
                 }
                 else
                 {
-                    query += " AND ([Patient name] LIKE @SearchTerm OR Address LIKE @SearchTerm OR Gender LIKE @SearchTerm OR [Date today] LIKE @SearchTerm)";
+                    query += " AND ([Patient name] LIKE @SearchTerm OR Address LIKE @SearchTerm OR Gender LIKE @SearchTerm OR [Date today] LIKE @SearchTerm OR Referral LIKE @SearchTerm)";
                 }
             }
 
@@ -136,14 +140,10 @@ namespace Pure_Health
             textBox3.ForeColor = Color.Black;
             comboBox1.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
             comboBox1.AutoCompleteSource = AutoCompleteSource.ListItems;
-
             comboBox2.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            comboBox2.AutoCompleteSource = AutoCompleteSource.ListItems;            
-
+            comboBox2.AutoCompleteSource = AutoCompleteSource.ListItems;
             dateTimePicker1.Format = DateTimePickerFormat.Custom;
-            dateTimePicker1.CustomFormat = "yyyy-MM-dd"; // Display format for the date
-            dateTimePicker2.Format = DateTimePickerFormat.Custom;
-            dateTimePicker2.CustomFormat = "yyyy-MM-dd"; // Display format for the date
+            dateTimePicker1.CustomFormat = "yyyy-MM-dd"; // Or "MM/dd/yyyy" based on your preference           
             CustomizeDataGridView();
             this.ControlBox = false;
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
@@ -299,7 +299,7 @@ namespace Pure_Health
                         MessageBox.Show("Invalid price entered. Please enter a valid numeric value for the price.");
                         return;
                     }
-                    // Validate Contact No. (must be exactly 11 digits)
+                    // Validate Contact No. (must be exactly 10 digits)
                     if (!Regex.IsMatch(text3, @"^\d{10}$"))
                     {
                         MessageBox.Show("Invalid Contact Number. Please enter exactly 10 digits (numbers only).",
@@ -322,7 +322,7 @@ namespace Pure_Health
 
                     // Get values from DateTimePicker
                     DateTime dateValue = dateTimePicker1.Value; // Birthdate
-                    DateTime dateValue1 = DateTime.Today; // Date today                
+                    DateTime dateValue1 = dateTimePicker2.Value; // Date today                
 
                     // Ensure "Date Today" is not in the past
                     if (dateValue1 < DateTime.Today)
@@ -469,6 +469,7 @@ namespace Pure_Health
                                 MessageBox.Show("Data saved successfully!");
 
                                 // Refresh DataGridViews
+                                
                                 ReorganizeIDs();
                                 LoadDataIntoDataGridView();
 
@@ -642,23 +643,39 @@ namespace Pure_Health
             string reorganizeQuery = @"
     BEGIN TRANSACTION;
 
-    SELECT ROW_NUMBER() OVER (ORDER BY Id) AS NewId, [Patient name], Address, [Contact no.], Age, [Test to conduct], Price, categories,Birthdate, [Date today], Gender, Referral
-    INTO #TempTable
-    FROM dbo.Table_1;
+    -- Create a temporary table with properly assigned sequential IDs
+    WITH Renumbered AS (
+        SELECT 
+            ROW_NUMBER() OVER (ORDER BY Id) AS NewId, 
+            [Patient name], Address, [Contact no.], Age, [Test to conduct], 
+            Price, categories, Birthdate, [Date today], Gender, Referral
+        FROM dbo.Table_1
+    )
+    SELECT * INTO #TempTable FROM Renumbered;
 
-    TRUNCATE TABLE dbo.Table_1;
+    -- Clear the existing table without resetting identity
+    DELETE FROM dbo.Table_1;
 
+    -- Enable manual ID insertion
     SET IDENTITY_INSERT dbo.Table_1 ON;
 
-    INSERT INTO dbo.Table_1 (Id, [Patient name], Address, [Contact no.], Age, [Test to conduct], Price, categories,Birthdate, [Date today], Gender, Referral)
-    SELECT NewId, [Patient name], Address, [Contact no.], Age, [Test to conduct], Price, categories,Birthdate, [Date today], Gender, Referral
+    -- Insert the reorganized data with new IDs
+    INSERT INTO dbo.Table_1 (Id, [Patient name], Address, [Contact no.], Age, [Test to conduct], 
+                             Price, categories, Birthdate, [Date today], Gender, Referral)
+    SELECT NewId, [Patient name], Address, [Contact no.], Age, [Test to conduct], 
+           Price, categories, Birthdate, [Date today], Gender, Referral
     FROM #TempTable;
 
+    -- Disable manual ID insertion
     SET IDENTITY_INSERT dbo.Table_1 OFF;
 
+    -- Remove temporary table
     DROP TABLE #TempTable;
 
-    DBCC CHECKIDENT ('dbo.Table_1', RESEED, 0);
+    -- Correct the identity seed (set it to the highest existing ID)
+    DECLARE @MaxId INT;
+    SELECT @MaxId = MAX(Id) FROM dbo.Table_1;
+    DBCC CHECKIDENT ('dbo.Table_1', RESEED, @MaxId);
 
     COMMIT TRANSACTION;
 ";
@@ -680,6 +697,7 @@ namespace Pure_Health
                 MessageBox.Show($"An error occurred during reorganization: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
 
 
@@ -849,9 +867,10 @@ namespace Pure_Health
 
         }
 
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
 
-       
-
+        }
     }
 
 }
