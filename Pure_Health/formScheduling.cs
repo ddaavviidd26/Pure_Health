@@ -40,16 +40,7 @@ namespace Pure_Health
         private void CustomizeSearchButton()
         {
             // Set button properties
-            btnSearch.Text = "Search";
-            btnSearch.Font = new Font("Cambria", 14, FontStyle.Bold);
-            btnSearch.ForeColor = Color.White;
-            btnSearch.BackColor = Color.FromArgb(104, 141, 94); // Modern green color
-            btnSearch.FlatStyle = FlatStyle.Flat;
-            btnSearch.FlatAppearance.BorderSize = 0; // Remove border
-            btnSearch.FlatAppearance.MouseOverBackColor = Color.FromArgb(81, 111, 72); // Darker green on hover
-            btnSearch.FlatAppearance.MouseDownBackColor = Color.FromArgb(60, 85, 55); // Even darker green on click
-            btnSearch.Size = new Size(100, 40); // Set button size
-            btnSearch.Cursor = Cursors.Hand; // Hand cursor on hover
+            
 
             txtSearch.BorderStyle = BorderStyle.None; // Remove default border
             txtSearch.Font = new Font("Cambria", 16, FontStyle.Regular);

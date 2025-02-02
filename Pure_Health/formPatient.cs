@@ -32,6 +32,7 @@ namespace Pure_Health
             textBox3.TextChanged += ValidateContactNumber;
             LoadPatientData(""); // Load all data initially
             txtSearch.TextChanged += TxtSearch_TextChanged;
+            CustomizeSearchButton();
 
         }
         private void Form1_Paint(object sender, PaintEventArgs e)
@@ -94,6 +95,21 @@ namespace Pure_Health
             dataGridView1.Columns["Id"].Width = 30;
             dataGridView1.Columns["Age"].Width = 50;
             dataGridView1.Columns["Price"].Width = 61;
+        }
+        private void CustomizeSearchButton()
+        {
+            // Set button properties
+
+
+            txtSearch.BorderStyle = BorderStyle.None; // Remove default border
+            txtSearch.Font = new Font("Cambria", 16, FontStyle.Regular);
+            txtSearch.ForeColor = Color.FromArgb(74, 54, 35); // Light brown color for text
+            txtSearch.BackColor = Color.FromArgb(231, 224, 202); // Soft beige background
+            txtSearch.Size = new Size(100, 35); // Set size of the text box
+            txtSearch.Padding = new Padding(10, 5, 10, 5); // Padding to give it a modern feel
+            txtSearch.Cursor = Cursors.IBeam; // Text cursor when typing
+            txtSearch.TextAlign = HorizontalAlignment.Left; // Text alignment
+            txtSearch.MaxLength = 60; // Set a maximum character limit
         }
         private void TxtSearch_TextChanged(object sender, EventArgs e)
         {
