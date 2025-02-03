@@ -142,6 +142,12 @@
     <Compile Include="formAccounting.Designer.cs">
       <DependentUpon>formAccounting.cs</DependentUpon>
     </Compile>
+    <Compile Include="formArchive.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formArchive.Designer.cs">
+      <DependentUpon>formArchive.cs</DependentUpon>
+    </Compile>
     <Compile Include="formAudittrails.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -219,6 +225,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="formAccounting.resx">
       <DependentUpon>formAccounting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formArchive.resx">
+      <DependentUpon>formArchive.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="formAudittrails.resx">
       <DependentUpon>formAudittrails.cs</DependentUpon>
@@ -343,6 +352,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="License-LGPL.txt" />
+    <None Include="Resources\upload-file %281%29.png" />
+    <None Include="Resources\upload-file.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">

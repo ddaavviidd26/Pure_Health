@@ -31,32 +31,33 @@
             this.components = new System.ComponentModel.Container();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
-            this.btnHam = new System.Windows.Forms.PictureBox();
             this.sidebar = new System.Windows.Forms.FlowLayoutPanel();
             this.panel6 = new System.Windows.Forms.Panel();
-            this.btnDashboard = new System.Windows.Forms.Button();
             this.menuContainer = new System.Windows.Forms.Panel();
             this.panel10 = new System.Windows.Forms.Panel();
-            this.btnEmployee = new System.Windows.Forms.Button();
             this.panel9 = new System.Windows.Forms.Panel();
-            this.btnInventory = new System.Windows.Forms.Button();
             this.panel7 = new System.Windows.Forms.Panel();
-            this.menu = new System.Windows.Forms.Button();
             this.panel8 = new System.Windows.Forms.Panel();
-            this.btnPatient = new System.Windows.Forms.Button();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.btnScheduling = new System.Windows.Forms.Button();
             this.panel4 = new System.Windows.Forms.Panel();
-            this.btnAccounting = new System.Windows.Forms.Button();
             this.panel11 = new System.Windows.Forms.Panel();
-            this.btnReports = new System.Windows.Forms.Button();
             this.panel5 = new System.Windows.Forms.Panel();
-            this.btnLogout = new System.Windows.Forms.Button();
             this.menutransition = new System.Windows.Forms.Timer(this.components);
             this.sidebarTransition = new System.Windows.Forms.Timer(this.components);
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.btnDashboard = new System.Windows.Forms.Button();
+            this.btnEmployee = new System.Windows.Forms.Button();
+            this.btnInventory = new System.Windows.Forms.Button();
+            this.menu = new System.Windows.Forms.Button();
+            this.btnPatient = new System.Windows.Forms.Button();
+            this.btnScheduling = new System.Windows.Forms.Button();
+            this.btnAccounting = new System.Windows.Forms.Button();
+            this.btnReports = new System.Windows.Forms.Button();
+            this.btnArchive = new System.Windows.Forms.Button();
+            this.btnLogout = new System.Windows.Forms.Button();
+            this.btnHam = new System.Windows.Forms.PictureBox();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.btnHam)).BeginInit();
             this.sidebar.SuspendLayout();
             this.panel6.SuspendLayout();
             this.menuContainer.SuspendLayout();
@@ -68,6 +69,8 @@
             this.panel4.SuspendLayout();
             this.panel11.SuspendLayout();
             this.panel5.SuspendLayout();
+            this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.btnHam)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -95,17 +98,6 @@
             this.label1.Text = "PUREHEALTH DIAGNOSTIC CENTER";
             this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
-            // btnHam
-            // 
-            this.btnHam.Image = global::Pure_Health.Properties.Resources.menu__1_;
-            this.btnHam.Location = new System.Drawing.Point(6, 7);
-            this.btnHam.Name = "btnHam";
-            this.btnHam.Size = new System.Drawing.Size(27, 32);
-            this.btnHam.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.btnHam.TabIndex = 1;
-            this.btnHam.TabStop = false;
-            this.btnHam.Click += new System.EventHandler(this.btnHam_Click);
-            // 
             // sidebar
             // 
             this.sidebar.BackColor = System.Drawing.Color.Green;
@@ -114,6 +106,7 @@
             this.sidebar.Controls.Add(this.panel3);
             this.sidebar.Controls.Add(this.panel4);
             this.sidebar.Controls.Add(this.panel11);
+            this.sidebar.Controls.Add(this.panel2);
             this.sidebar.Controls.Add(this.panel5);
             this.sidebar.Dock = System.Windows.Forms.DockStyle.Left;
             this.sidebar.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
@@ -122,6 +115,7 @@
             this.sidebar.Padding = new System.Windows.Forms.Padding(0, 30, 0, 0);
             this.sidebar.Size = new System.Drawing.Size(280, 708);
             this.sidebar.TabIndex = 1;
+            this.sidebar.Paint += new System.Windows.Forms.PaintEventHandler(this.sidebar_Paint);
             // 
             // panel6
             // 
@@ -130,21 +124,6 @@
             this.panel6.Name = "panel6";
             this.panel6.Size = new System.Drawing.Size(277, 52);
             this.panel6.TabIndex = 5;
-            // 
-            // btnDashboard
-            // 
-            this.btnDashboard.BackColor = System.Drawing.Color.Green;
-            this.btnDashboard.Font = new System.Drawing.Font("Cambria", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnDashboard.Image = global::Pure_Health.Properties.Resources.dashboard__1_;
-            this.btnDashboard.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnDashboard.Location = new System.Drawing.Point(-16, -21);
-            this.btnDashboard.Name = "btnDashboard";
-            this.btnDashboard.Padding = new System.Windows.Forms.Padding(25, 0, 0, 0);
-            this.btnDashboard.Size = new System.Drawing.Size(299, 99);
-            this.btnDashboard.TabIndex = 4;
-            this.btnDashboard.Text = "Dashboard";
-            this.btnDashboard.UseVisualStyleBackColor = false;
-            this.btnDashboard.Click += new System.EventHandler(this.btnDashboard_Click);
             // 
             // menuContainer
             // 
@@ -165,6 +144,95 @@
             this.panel10.Size = new System.Drawing.Size(280, 52);
             this.panel10.TabIndex = 6;
             // 
+            // panel9
+            // 
+            this.panel9.Controls.Add(this.btnInventory);
+            this.panel9.Location = new System.Drawing.Point(3, 97);
+            this.panel9.Name = "panel9";
+            this.panel9.Size = new System.Drawing.Size(280, 52);
+            this.panel9.TabIndex = 5;
+            // 
+            // panel7
+            // 
+            this.panel7.Controls.Add(this.menu);
+            this.panel7.Location = new System.Drawing.Point(3, 0);
+            this.panel7.Name = "panel7";
+            this.panel7.Size = new System.Drawing.Size(280, 52);
+            this.panel7.TabIndex = 5;
+            // 
+            // panel8
+            // 
+            this.panel8.Controls.Add(this.btnPatient);
+            this.panel8.Location = new System.Drawing.Point(3, 49);
+            this.panel8.Name = "panel8";
+            this.panel8.Size = new System.Drawing.Size(280, 52);
+            this.panel8.TabIndex = 5;
+            // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.btnScheduling);
+            this.panel3.Location = new System.Drawing.Point(3, 149);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(277, 52);
+            this.panel3.TabIndex = 5;
+            // 
+            // panel4
+            // 
+            this.panel4.Controls.Add(this.btnAccounting);
+            this.panel4.Location = new System.Drawing.Point(3, 207);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(277, 52);
+            this.panel4.TabIndex = 6;
+            // 
+            // panel11
+            // 
+            this.panel11.Controls.Add(this.btnReports);
+            this.panel11.Location = new System.Drawing.Point(3, 265);
+            this.panel11.Name = "panel11";
+            this.panel11.Size = new System.Drawing.Size(280, 52);
+            this.panel11.TabIndex = 6;
+            // 
+            // panel5
+            // 
+            this.panel5.Controls.Add(this.btnLogout);
+            this.panel5.Location = new System.Drawing.Point(3, 381);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(277, 52);
+            this.panel5.TabIndex = 7;
+            // 
+            // menutransition
+            // 
+            this.menutransition.Interval = 10;
+            this.menutransition.Tick += new System.EventHandler(this.menutransition_Tick);
+            // 
+            // sidebarTransition
+            // 
+            this.sidebarTransition.Interval = 10;
+            this.sidebarTransition.Tick += new System.EventHandler(this.sidebarTransition_Tick);
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.btnArchive);
+            this.panel2.Location = new System.Drawing.Point(3, 323);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(277, 52);
+            this.panel2.TabIndex = 8;
+            // 
+            // btnDashboard
+            // 
+            this.btnDashboard.BackColor = System.Drawing.Color.Green;
+            this.btnDashboard.Font = new System.Drawing.Font("Cambria", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnDashboard.Image = global::Pure_Health.Properties.Resources.dashboard__1_;
+            this.btnDashboard.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnDashboard.Location = new System.Drawing.Point(-16, -21);
+            this.btnDashboard.Name = "btnDashboard";
+            this.btnDashboard.Padding = new System.Windows.Forms.Padding(25, 0, 0, 0);
+            this.btnDashboard.Size = new System.Drawing.Size(299, 99);
+            this.btnDashboard.TabIndex = 4;
+            this.btnDashboard.Text = "Dashboard";
+            this.btnDashboard.UseVisualStyleBackColor = false;
+            this.btnDashboard.Click += new System.EventHandler(this.btnDashboard_Click);
+            // 
             // btnEmployee
             // 
             this.btnEmployee.BackColor = System.Drawing.Color.SeaGreen;
@@ -180,14 +248,6 @@
             this.btnEmployee.UseVisualStyleBackColor = false;
             this.btnEmployee.Click += new System.EventHandler(this.btnEmployee_Click);
             // 
-            // panel9
-            // 
-            this.panel9.Controls.Add(this.btnInventory);
-            this.panel9.Location = new System.Drawing.Point(3, 97);
-            this.panel9.Name = "panel9";
-            this.panel9.Size = new System.Drawing.Size(280, 52);
-            this.panel9.TabIndex = 5;
-            // 
             // btnInventory
             // 
             this.btnInventory.BackColor = System.Drawing.Color.SeaGreen;
@@ -202,14 +262,6 @@
             this.btnInventory.Text = "Inventory";
             this.btnInventory.UseVisualStyleBackColor = false;
             this.btnInventory.Click += new System.EventHandler(this.btnInventory_Click);
-            // 
-            // panel7
-            // 
-            this.panel7.Controls.Add(this.menu);
-            this.panel7.Location = new System.Drawing.Point(3, 0);
-            this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(280, 52);
-            this.panel7.TabIndex = 5;
             // 
             // menu
             // 
@@ -227,14 +279,6 @@
             this.menu.UseVisualStyleBackColor = false;
             this.menu.Click += new System.EventHandler(this.menu_Click);
             // 
-            // panel8
-            // 
-            this.panel8.Controls.Add(this.btnPatient);
-            this.panel8.Location = new System.Drawing.Point(3, 49);
-            this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(280, 52);
-            this.panel8.TabIndex = 5;
-            // 
             // btnPatient
             // 
             this.btnPatient.BackColor = System.Drawing.Color.SeaGreen;
@@ -251,14 +295,6 @@
             this.btnPatient.UseVisualStyleBackColor = false;
             this.btnPatient.Click += new System.EventHandler(this.btnPatient_Click);
             // 
-            // panel3
-            // 
-            this.panel3.Controls.Add(this.btnScheduling);
-            this.panel3.Location = new System.Drawing.Point(3, 149);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(277, 52);
-            this.panel3.TabIndex = 5;
-            // 
             // btnScheduling
             // 
             this.btnScheduling.BackColor = System.Drawing.Color.Green;
@@ -273,14 +309,6 @@
             this.btnScheduling.Text = "Scheduling";
             this.btnScheduling.UseVisualStyleBackColor = false;
             this.btnScheduling.Click += new System.EventHandler(this.btnScheduling_Click);
-            // 
-            // panel4
-            // 
-            this.panel4.Controls.Add(this.btnAccounting);
-            this.panel4.Location = new System.Drawing.Point(3, 207);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(277, 52);
-            this.panel4.TabIndex = 6;
             // 
             // btnAccounting
             // 
@@ -297,14 +325,6 @@
             this.btnAccounting.UseVisualStyleBackColor = false;
             this.btnAccounting.Click += new System.EventHandler(this.btnAccounting_Click);
             // 
-            // panel11
-            // 
-            this.panel11.Controls.Add(this.btnReports);
-            this.panel11.Location = new System.Drawing.Point(3, 265);
-            this.panel11.Name = "panel11";
-            this.panel11.Size = new System.Drawing.Size(280, 52);
-            this.panel11.TabIndex = 6;
-            // 
             // btnReports
             // 
             this.btnReports.BackColor = System.Drawing.Color.Green;
@@ -320,13 +340,20 @@
             this.btnReports.UseVisualStyleBackColor = false;
             this.btnReports.Click += new System.EventHandler(this.btnReports_Click);
             // 
-            // panel5
+            // btnArchive
             // 
-            this.panel5.Controls.Add(this.btnLogout);
-            this.panel5.Location = new System.Drawing.Point(3, 323);
-            this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(277, 52);
-            this.panel5.TabIndex = 7;
+            this.btnArchive.BackColor = System.Drawing.Color.Green;
+            this.btnArchive.Font = new System.Drawing.Font("Cambria", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnArchive.Image = global::Pure_Health.Properties.Resources.upload_file__1_;
+            this.btnArchive.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnArchive.Location = new System.Drawing.Point(-13, -21);
+            this.btnArchive.Name = "btnArchive";
+            this.btnArchive.Padding = new System.Windows.Forms.Padding(25, 0, 0, 0);
+            this.btnArchive.Size = new System.Drawing.Size(296, 99);
+            this.btnArchive.TabIndex = 4;
+            this.btnArchive.Text = "Archive";
+            this.btnArchive.UseVisualStyleBackColor = false;
+            this.btnArchive.Click += new System.EventHandler(this.btnArchive_Click);
             // 
             // btnLogout
             // 
@@ -343,15 +370,16 @@
             this.btnLogout.UseVisualStyleBackColor = false;
             this.btnLogout.Click += new System.EventHandler(this.btnLogout_Click);
             // 
-            // menutransition
+            // btnHam
             // 
-            this.menutransition.Interval = 10;
-            this.menutransition.Tick += new System.EventHandler(this.menutransition_Tick);
-            // 
-            // sidebarTransition
-            // 
-            this.sidebarTransition.Interval = 10;
-            this.sidebarTransition.Tick += new System.EventHandler(this.sidebarTransition_Tick);
+            this.btnHam.Image = global::Pure_Health.Properties.Resources.menu__1_;
+            this.btnHam.Location = new System.Drawing.Point(6, 7);
+            this.btnHam.Name = "btnHam";
+            this.btnHam.Size = new System.Drawing.Size(27, 32);
+            this.btnHam.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.btnHam.TabIndex = 1;
+            this.btnHam.TabStop = false;
+            this.btnHam.Click += new System.EventHandler(this.btnHam_Click);
             // 
             // Form2
             // 
@@ -370,7 +398,6 @@
             this.Load += new System.EventHandler(this.Form2_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.btnHam)).EndInit();
             this.sidebar.ResumeLayout(false);
             this.panel6.ResumeLayout(false);
             this.menuContainer.ResumeLayout(false);
@@ -382,6 +409,8 @@
             this.panel4.ResumeLayout(false);
             this.panel11.ResumeLayout(false);
             this.panel5.ResumeLayout(false);
+            this.panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.btnHam)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
             this.ResumeLayout(false);
 
@@ -415,5 +444,7 @@
         private System.Windows.Forms.Panel panel5;
         private System.Windows.Forms.Button btnLogout;
         private System.Windows.Forms.BindingSource bindingSource1;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Button btnArchive;
     }
 }

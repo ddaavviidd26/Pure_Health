@@ -4,19 +4,21 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 
 namespace Pure_Health
 {
     public partial class formScheduling : Form
     {
-
+        private string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
         public formScheduling()
         {
             InitializeComponent();
             CustomizeSearchButton();
             // Initialize ComboBox with items and prices
             InitializeComboBoxWithPrices();
+            textBox2.TextChanged += ValidateContactNumber;
         }
 
         private void InitializeComboBoxWithPrices()
@@ -36,6 +38,44 @@ namespace Pure_Health
 
             // Attach event handler for selection change
             comboBox1.SelectedIndexChanged += ComboBox1_SelectedIndexChanged;
+        }
+        private void txtSearch_TextChanged(object sender, EventArgs e)
+        {
+            string searchTerm = txtSearch.Text.Trim();
+            LoadPatientData(searchTerm);
+        }
+        private void LoadPatientData(string searchTerm)
+        {
+            string query = "SELECT * FROM dbo.Table_4 WHERE 1=1";
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                if (int.TryParse(searchTerm, out _))
+                {
+                    query += " AND ID = @SearchTerm"; // Numeric ID search
+                }
+                else
+                {
+                    query += " AND ([Patient name] LIKE @SearchTerm OR Doctor LIKE @SearchTerm OR [Test to conduct] LIKE @SearchTerm)";
+                }
+            }
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    if (!string.IsNullOrWhiteSpace(searchTerm))
+                    {
+                        cmd.Parameters.AddWithValue("@SearchTerm", searchTerm.All(char.IsDigit) ? searchTerm : $"%{searchTerm}%");
+                    }
+
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                    DataTable dt = new DataTable();
+                    adapter.Fill(dt);
+
+                    dataGridView1.DataSource = dt;
+                }
+            }
         }
         private void CustomizeSearchButton()
         {
@@ -121,6 +161,10 @@ namespace Pure_Health
 
         private void formScheduling_Load(object sender, EventArgs e)
         {
+            comboBox1.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            comboBox1.AutoCompleteSource = AutoCompleteSource.ListItems;
+            comboBox2.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            comboBox2.AutoCompleteSource = AutoCompleteSource.ListItems;
             CustomizeDataGridView();
             this.ControlBox = false;
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
@@ -140,58 +184,81 @@ namespace Pure_Health
                 MessageBox.Show("An error occurred: " + ex.Message);
             }
         }
+        private void ValidateContactNumber(object sender, EventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            if (!System.Text.RegularExpressions.Regex.IsMatch(textBox.Text, @"^\d{10,12}$")) // 10-12 digit number
+            {
+                textBox.ForeColor = Color.Red;
+            }
+            else
+            {
+                textBox.ForeColor = Color.Black;
+            }
+        }
 
         private void button2_Click(object sender, EventArgs e)
         {
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
-            string insertQuery = @"
-        INSERT INTO dbo.Table_4 ([Patient name],[Contact no.], Price,[Schedule time], [Test to conduct], Doctor) 
-        VALUES (@Text1, @Text2, @Text6, @DateValue, @Combo1, @Combo2)";
 
-            string updateTable6Query = @"
-        IF EXISTS (SELECT 1 FROM dbo.Table_6 WHERE [Date] = @DateToday)
-        BEGIN
-            UPDATE dbo.Table_6
-            SET 
-                GROSS = GROSS + @Price,
-                UTZ = UTZ + @UTZCount,
-                LAB = LAB + @LABCount,
-                XRAY = XRAY + @XRAYCount,
-                ECG = ECG + @ECGCount,
-                ECHO = ECHO + @ECHOCount
-            WHERE [Date] = @DateToday
-        END
-        ELSE
-        BEGIN
-             INSERT INTO dbo.Table_6 ([Date], GROSS, UTZ, LAB, XRAY, ECG, ECHO)
-            VALUES (@DateToday, @Price, @UTZCount, @LABCount, @XRAYCount, @ECGCount, @ECHOCount)
-        END";
+            string upsertQuery = @"
+    IF EXISTS (SELECT 1 FROM dbo.Table_4 WHERE [Patient name] = @Text1)
+    BEGIN
+        UPDATE dbo.Table_4
+        SET 
+            [Contact no.] = @Text2,
+            Price = @Text6,
+            [Schedule time] = @DateValue,
+            [Test to conduct] = @Combo1,
+            Doctor = @Combo2
+        WHERE [Patient name] = @Text1;
+    END
+    ELSE
+    BEGIN
+        INSERT INTO dbo.Table_4 ([Patient name], [Contact no.], Price, [Schedule time], [Test to conduct], Doctor)
+        VALUES (@Text1, @Text2, @Text6, @DateValue, @Combo1, @Combo2);
+    END";
 
             try
             {
                 string text1 = textBox1.Text; // Patient Name
                 string text2 = textBox2.Text; // Contact No.
 
-                // Extract and convert text6 (Price)
+                if (string.IsNullOrWhiteSpace(text1))
+                {
+                    MessageBox.Show("Patient name cannot be empty.");
+                    return;
+                }
+                if (text1.Length > 30)
+                {
+                    MessageBox.Show("Maximum 30 characters allowed.");
+                    return;
+                }
+                if (!Regex.IsMatch(text1, @"^[A-Za-z\s]+$"))
+                {
+                    MessageBox.Show("Invalid Name: Only letters allowed.");
+                    return;
+                }
+                if (!Regex.IsMatch(text2, @"^\d{10}$"))
+                {
+                    MessageBox.Show("Invalid Contact Number. Please enter exactly 10 digits (numbers only).",
+                                    "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
                 string text6 = label12.Text;
-               string cleanedText6 = Regex.Replace(text6, @"[^\d.]", ""); // Keep only digits and a single decimal point
-if (decimal.TryParse(cleanedText6, out decimal priceValue))
-{
-    // Convert to integer by truncating the decimal portion
-    int intPriceValue = (int)Math.Floor(priceValue);
-}
-else
-{
-    MessageBox.Show("Invalid price. Please ensure the price is numeric.");
-    return;
-}
+                string cleanedText6 = Regex.Replace(text6, @"[^\d.]", ""); // Keep only numbers and decimal
+                if (!decimal.TryParse(cleanedText6, out decimal priceValue))
+                {
+                    MessageBox.Show("Invalid price. Please ensure the price is numeric.");
+                    return;
+                }
 
                 DateTime dateValue = dateTimePicker1.Value; // Schedule Time
-                DateTime dateToday = DateTime.Now.Date; // Today's Date
                 if (dateValue < DateTime.Today)
                 {
-                    MessageBox.Show("Invalid Date", "Invalid Date", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return; // Exit method if the date is in the past
+                    MessageBox.Show("Invalid Date: Cannot be in the past.", "Invalid Date", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
                 }
 
                 string combo1 = comboBox1.SelectedItem?.ToString() ?? ""; // Test to Conduct
@@ -203,26 +270,16 @@ else
                     return;
                 }
 
-                // Determine counts for UTZ and LAB based on comboBox1 value
-                int utzCount = combo1.Equals("Ultrasound", StringComparison.OrdinalIgnoreCase) ? 1 : 0;
-                int labCount = combo1.Equals("Blood Chemistry", StringComparison.OrdinalIgnoreCase) ? 1 : 0;
-                int xrayCount = combo1.Equals("", StringComparison.OrdinalIgnoreCase) ? 1 : 0;
-                int ecgCount = combo1.Equals("", StringComparison.OrdinalIgnoreCase) ? 1 : 0;
-                int echoCount = combo1.Equals("", StringComparison.OrdinalIgnoreCase) ? 1 : 0;
-
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
-
                     using (SqlTransaction transaction = connection.BeginTransaction())
                     {
                         try
                         {
-                            // Insert into Table_4
-                            using (SqlCommand command = new SqlCommand(insertQuery, connection, transaction))
+                            // Upsert into Table_4
+                            using (SqlCommand command = new SqlCommand(upsertQuery, connection, transaction))
                             {
-                                command.CommandTimeout = 120; // Increase timeout to 120 seconds
-
                                 command.Parameters.AddWithValue("@Text1", text1);
                                 command.Parameters.AddWithValue("@Text2", text2);
                                 command.Parameters.AddWithValue("@Text6", priceValue);
@@ -233,24 +290,9 @@ else
                                 command.ExecuteNonQuery();
                             }
 
-                            // Update or Insert into Table_6
-                            using (SqlCommand command = new SqlCommand(updateTable6Query, connection, transaction))
-                            {
-                                command.CommandTimeout = 120; // Increase timeout to 120 seconds
-
-                                command.Parameters.AddWithValue("@DateToday", dateToday);
-                                command.Parameters.AddWithValue("@Price", priceValue);
-                                command.Parameters.AddWithValue("@UTZCount", utzCount);
-                                command.Parameters.AddWithValue("@LABCount", labCount);
-                                command.Parameters.AddWithValue("@XRAYCount", xrayCount);
-                                command.Parameters.AddWithValue("@ECGCount", ecgCount);
-                                command.Parameters.AddWithValue("@ECHOCount", echoCount);
-
-                                command.ExecuteNonQuery();
-                            }
-
                             transaction.Commit();
                             MessageBox.Show("Data saved successfully!");
+                            ReorganizeIDs();
                             LoadDataIntoDataGridView(); // Refresh DataGridView
                             ClearInputFields(); // Clear input fields
                         }
@@ -267,6 +309,7 @@ else
                 MessageBox.Show($"An error occurred: {ex.Message}");
             }
         }
+
 
 
 
@@ -373,46 +416,58 @@ else
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
 
             string reorganizeQuery = @"
-        BEGIN TRANSACTION;
+    BEGIN TRANSACTION;
 
-        -- Step 1: Create a temporary table with the same schema but without the IDENTITY property
-        SELECT ROW_NUMBER() OVER (ORDER BY ID) AS NewId, [Patient name],[Contact no.], Price,[Schedule time], [Test to conduct], Doctor
-        INTO #TempTable
-        FROM dbo.Table_4;
+    -- Step 1: Create a temporary table with sequential IDs
+    WITH Renumbered AS (
+        SELECT 
+            ROW_NUMBER() OVER (ORDER BY ID) AS NewId, 
+            [Patient name], [Contact no.], Price, [Schedule time], [Test to conduct], Doctor
+        FROM dbo.Table_4
+    )
+    SELECT * INTO #TempTable FROM Renumbered;
 
-        -- Step 2: Disable identity insert on the original table
-        SET IDENTITY_INSERT dbo.Table_4 ON;
+    -- Step 2: Delete all existing records (instead of truncating)
+    DELETE FROM dbo.Table_4;
 
-        -- Step 3: Truncate the original table
-        TRUNCATE TABLE dbo.Table_4;
+    -- Step 3: Reset identity to start at 1
+    DBCC CHECKIDENT ('dbo.Table_4', RESEED, 0);
 
-        -- Step 4: Insert the data back into the original table with sequential IDs
-        INSERT INTO dbo.Table_4 (ID, [Patient name],[Contact no.], Price,[Schedule time], [Test to conduct], Doctor)
-        SELECT NewId, [Patient name],[Contact no.], Price,[Schedule time], [Test to conduct], Doctor
-        FROM #TempTable;
+    -- Step 4: Enable identity insert for manual ID assignment
+    SET IDENTITY_INSERT dbo.Table_4 ON;
 
-        -- Step 5: Drop the temporary table
-        DROP TABLE #TempTable;
+    -- Step 5: Insert reorganized data with sequential IDs
+    INSERT INTO dbo.Table_4 (ID, [Patient name], [Contact no.], Price, [Schedule time], [Test to conduct], Doctor)
+    SELECT NewId, [Patient name], [Contact no.], Price, [Schedule time], [Test to conduct], Doctor
+    FROM #TempTable;
 
-        -- Step 6: Reset the identity seed
-        DBCC CHECKIDENT ('dbo.Table_4', RESEED, 0);
+    -- Step 6: Disable identity insert
+    SET IDENTITY_INSERT dbo.Table_4 OFF;
 
-        -- Step 7: Re-enable identity insert
-        SET IDENTITY_INSERT dbo.Table_4 OFF;
+    -- Step 7: Drop the temporary table
+    DROP TABLE #TempTable;
 
-        COMMIT TRANSACTION;
-    ";
+    COMMIT TRANSACTION;
+";
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            try
             {
-                connection.Open();
-
-                using (SqlCommand command = new SqlCommand(reorganizeQuery, connection))
+                using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-                    command.ExecuteNonQuery();
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(reorganizeQuery, connection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred during reorganization: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
+
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -511,7 +566,8 @@ else
         private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
         {
 
-        }
+        }       
+        
     }
 }
     

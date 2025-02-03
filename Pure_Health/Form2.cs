@@ -20,6 +20,7 @@ namespace Pure_Health
         formAudittrails audittrails;
         formAccounting accounting;
         formReports reports;
+        formArchive archive;
         private string fullText = "PureHealth Laboratory - Precision, Care, Results You Can Trust.";
         private int textIndex = 0;
 
@@ -267,6 +268,25 @@ namespace Pure_Health
             }
 
         }
+        private void btnArchive_Click(object sender, EventArgs e)
+        {
+            if (archive == null)
+            {
+                archive = new formArchive();
+                archive.FormClosed += archive_FormClosed;
+                archive.MdiParent = this;
+                archive.Dock = DockStyle.Fill;
+                archive.Show();
+            }
+            else
+            {
+                archive.Activate();
+            }
+        }
+        private void archive_FormClosed(object sender, EventArgs e)
+        {
+            archive = null;
+        }
         private void reports_FormClosed(object sender, EventArgs e)
         {
             reports = null;
@@ -283,6 +303,8 @@ namespace Pure_Health
             }
         }
 
+
+
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
 
@@ -297,6 +319,13 @@ namespace Pure_Health
         {
 
         }
+
+        private void sidebar_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+       
     }
     
 

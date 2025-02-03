@@ -344,9 +344,9 @@
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button2.Font = new System.Drawing.Font("Cambria", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button2.ForeColor = System.Drawing.Color.Black;
-            this.button2.Location = new System.Drawing.Point(916, 116);
+            this.button2.Location = new System.Drawing.Point(899, 116);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(79, 34);
+            this.button2.Size = new System.Drawing.Size(97, 34);
             this.button2.TabIndex = 22;
             this.button2.Text = "Add";
             this.button2.UseVisualStyleBackColor = false;
@@ -358,11 +358,11 @@
             this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button3.Font = new System.Drawing.Font("Cambria", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button3.ForeColor = System.Drawing.Color.Black;
-            this.button3.Location = new System.Drawing.Point(916, 253);
+            this.button3.Location = new System.Drawing.Point(899, 253);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(79, 34);
+            this.button3.Size = new System.Drawing.Size(97, 34);
             this.button3.TabIndex = 23;
-            this.button3.Text = "Delete";
+            this.button3.Text = "Archive";
             this.button3.UseVisualStyleBackColor = false;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
@@ -372,9 +372,9 @@
             this.button4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button4.Font = new System.Drawing.Font("Cambria", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button4.ForeColor = System.Drawing.Color.Black;
-            this.button4.Location = new System.Drawing.Point(916, 185);
+            this.button4.Location = new System.Drawing.Point(899, 185);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(79, 34);
+            this.button4.Size = new System.Drawing.Size(97, 34);
             this.button4.TabIndex = 24;
             this.button4.Text = "Edit";
             this.button4.UseVisualStyleBackColor = false;

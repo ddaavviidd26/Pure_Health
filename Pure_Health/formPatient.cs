@@ -268,248 +268,179 @@ namespace Pure_Health
 
         private void button2_Click(object sender, EventArgs e)
         {
-            {
-                DateTime selectedDate = dateTimePicker1.Value.Date;
+            DateTime selectedDate = dateTimePicker1.Value.Date;
 
-                string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
-                string queryTable1Insert = @"
+            string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
+
+            // Insert and Update Queries for Table_1
+            string queryTable1Insert = @"
     INSERT INTO dbo.Table_1 ([Patient name], Address, [Contact no.], Age, [Test to conduct], Price, categories, Birthdate, [Date today], Gender, Referral) 
     VALUES (@Text1, @Text2, @Text3, @Text4, @Text5, @Text6, @Text7, @DateValue, @DateValue1, @Combo1, @Combo2)";
 
-                string queryTable1Update = @"
+            string queryTable1Update = @"
     UPDATE dbo.Table_1
     SET Address = @Text2, [Contact no.] = @Text3, Age = @Text4, [Test to conduct] = @Text5, Price = @Text6, categories = @Text7, Birthdate = @DateValue, 
         [Date today] = @DateValue1, Gender = @Combo1, Referral = @Combo2
     WHERE [Patient name] = @Text1";
 
-                try
+            // Insert and Update Queries for Table_5 (Same as Table_1)
+            string queryTable5Insert = queryTable1Insert.Replace("Table_1", "Table_5");
+            string queryTable5Update = queryTable1Update.Replace("Table_1", "Table_5");
+
+            try
+            {
+                // Gather input
+                string text1 = textBox1.Text; // Patient Name
+                string text2 = textBox2.Text; // Address
+                string text3 = textBox3.Text; // Contact no.
+                string text4 = textBox4.Text; // Age
+                string text5 = textBox5.Text; // Test to conduct
+                string text6 = textBox6.Text;
+
+                if (!float.TryParse(text6, out float priceValue))
                 {
-                    // Gather input from TextBoxes
-                    string text1 = textBox1.Text; // Patient Name
-                    string text2 = textBox2.Text; // Address
-                    string text3 = textBox3.Text; // Contact no.
-                    string text4 = textBox4.Text; // Age
-                    string text5 = textBox5.Text; // Test to conduct
-                    if (string.IsNullOrWhiteSpace(text1))
-                    {
-                        MessageBox.Show("Patient name cannot be empty.");
-                        return;
-                    }
-                    // Ensure the name is not longer than 30 characters
-                    if (text1.Length > 30)
-                    {
-                        MessageBox.Show("Maximum 30 characters");
-                        return;
-                    }
+                    MessageBox.Show("Invalid price entered.");
+                    return;
+                }
 
-                    // Ensure only letters (no numbers or special characters) are present
-                    if (!Regex.IsMatch(text1, @"^[A-Za-z\s]+$"))
-                    {
-                        MessageBox.Show("Invalid Name");
-                        return;
-                    }
-                    // Convert textBox6 value to a float for Price
-                    string text6 = textBox6.Text;
-                    if (!float.TryParse(text6, out float priceValue))
-                    {
-                        MessageBox.Show("Invalid price entered. Please enter a valid numeric value for the price.");
-                        return;
-                    }
-                    // Validate Contact No. (must be exactly 10 digits)
-                    if (!Regex.IsMatch(text3, @"^\d{10}$"))
-                    {
-                        MessageBox.Show("Invalid Contact Number. Please enter exactly 10 digits (numbers only).",
-                                        "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
+                string[] categories = textBox7.Text
+                    .Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(c => c.Trim())
+                    .ToArray();
 
-                    // Validate Age (must be numeric and max 3 digits)
-                    if (!Regex.IsMatch(text4, @"^\d{1,3}$"))
+                DateTime dateValue = dateTimePicker1.Value;
+                DateTime dateValue1 = dateTimePicker2.Value;
+
+                string combo1 = comboBox1.SelectedItem?.ToString() ?? "";
+                string combo2 = comboBox2.SelectedItem?.ToString() ?? "";
+
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (SqlTransaction transaction = connection.BeginTransaction())
                     {
-                        MessageBox.Show("Invalid Age. Please enter a valid number (1-999).",
-                                        "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
-                    // Split multiline input in textBox7 into individual categories
-                    string[] categories = textBox7.Text
-                        .Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries)
-                        .Select(c => c.Trim())
-                        .ToArray();
-
-                    // Get values from DateTimePicker
-                    DateTime dateValue = dateTimePicker1.Value; // Birthdate
-                    DateTime dateValue1 = dateTimePicker2.Value; // Date today                
-
-                    // Ensure "Date Today" is not in the past
-                    if (dateValue1 < DateTime.Today)
-                    {
-                        MessageBox.Show("You cannot record data for past dates. Please select a future date.", "Invalid Date", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return; // Exit method if the date is in the past
-                    }
-
-                    // Gather input from ComboBoxes
-                    string combo1 = comboBox1.SelectedItem?.ToString() ?? ""; // Gender
-                    string combo2 = comboBox2.SelectedItem?.ToString() ?? ""; // Referral
-
-                    // Validation
-                    if (string.IsNullOrWhiteSpace(text1) || string.IsNullOrWhiteSpace(combo1))
-                    {
-                        MessageBox.Show("Please fill in all required fields.");
-                        return;
-                    }
-
-                    // Create a connection to SQL Server
-                    using (SqlConnection connection = new SqlConnection(connectionString))
-                    {
-                        connection.Open();
-
-                        // Start a transaction to ensure consistency
-                        using (SqlTransaction transaction = connection.BeginTransaction())
+                        try
                         {
-                            try
+                            // ✅ **Check if patient exists in Table_1**
+                            string queryCheckExistence = "SELECT COUNT(*) FROM dbo.Table_1 WHERE [Patient name] = @Text1";
+                            int count;
+                            using (SqlCommand checkCommand = new SqlCommand(queryCheckExistence, connection, transaction))
                             {
-                                // Check if the Patient name already exists in the database
-                                string queryCheckExistence = "SELECT COUNT(*) FROM dbo.Table_1 WHERE [Patient name] = @Text1";
-                                int count;
-                                using (SqlCommand checkCommand = new SqlCommand(queryCheckExistence, connection, transaction))
-                                {
-                                    checkCommand.Parameters.AddWithValue("@Text1", text1);
-                                    count = (int)checkCommand.ExecuteScalar();
-                                }
-
-                                if (count > 0)
-                                {
-                                    // If the Patient name exists, update the record
-                                    using (SqlCommand updateCommand = new SqlCommand(queryTable1Update, connection, transaction))
-                                    {
-                                        updateCommand.Parameters.AddWithValue("@Text1", text1);
-                                        updateCommand.Parameters.AddWithValue("@Text2", text2);
-                                        updateCommand.Parameters.AddWithValue("@Text3", text3);
-                                        updateCommand.Parameters.AddWithValue("@Text4", text4);
-                                        updateCommand.Parameters.AddWithValue("@Text5", text5);
-                                        updateCommand.Parameters.AddWithValue("@Text6", priceValue);
-                                        updateCommand.Parameters.AddWithValue("@Text7", string.Join(", ", categories)); // Store all categories as a comma-separated string
-                                        updateCommand.Parameters.AddWithValue("@DateValue", dateValue);
-                                        updateCommand.Parameters.AddWithValue("@DateValue1", dateValue1);
-                                        updateCommand.Parameters.AddWithValue("@Combo1", combo1);
-                                        updateCommand.Parameters.AddWithValue("@Combo2", combo2);
-
-                                        updateCommand.ExecuteNonQuery();
-                                    }
-                                }
-                                else
-                                {
-                                    // If the Patient name does not exist, insert a new row
-                                    using (SqlCommand insertCommand = new SqlCommand(queryTable1Insert, connection, transaction))
-                                    {
-                                        insertCommand.Parameters.AddWithValue("@Text1", text1);
-                                        insertCommand.Parameters.AddWithValue("@Text2", text2);
-                                        insertCommand.Parameters.AddWithValue("@Text3", text3);
-                                        insertCommand.Parameters.AddWithValue("@Text4", text4);
-                                        insertCommand.Parameters.AddWithValue("@Text5", text5);
-                                        insertCommand.Parameters.AddWithValue("@Text6", priceValue);
-                                        insertCommand.Parameters.AddWithValue("@Text7", string.Join(", ", categories)); // Store all categories as a comma-separated string
-                                        insertCommand.Parameters.AddWithValue("@DateValue", dateValue);
-                                        insertCommand.Parameters.AddWithValue("@DateValue1", dateValue1);
-                                        insertCommand.Parameters.AddWithValue("@Combo1", combo1);
-                                        insertCommand.Parameters.AddWithValue("@Combo2", combo2);
-
-                                        insertCommand.ExecuteNonQuery();
-                                    }
-                                }
-
-                                // Update or Insert into Table_6 (same as in your original code)
-                                string queryCheckDate = "SELECT COUNT(*) FROM dbo.Table_6 WHERE [Date] = @DateToday";
-                                int countTable6;
-                                using (SqlCommand checkCommand = new SqlCommand(queryCheckDate, connection, transaction))
-                                {
-                                    checkCommand.Parameters.AddWithValue("@DateToday", dateValue1);
-                                    countTable6 = (int)checkCommand.ExecuteScalar();
-                                }
-
-                                string queryUpdateOrInsertTable6;
-                                if (countTable6 > 0)
-                                {
-                                    // Update existing row in Table_6
-                                    queryUpdateOrInsertTable6 = @"
-                        UPDATE dbo.Table_6
-                        SET 
-                            GROSS = GROSS + @Price,
-                            UTZ = UTZ + @UTZCount,
-                            LAB = LAB + @LABCount,
-                            XRAY = XRAY + @XRAYCount,
-                            ECG = ECG + @ECGCount,
-                            ECHO = ECHO + @ECHOCount
-                        WHERE [Date] = @DateToday";
-                                }
-                                else
-                                {
-                                    // Insert new row into Table_6
-                                    queryUpdateOrInsertTable6 = @"
-                        INSERT INTO dbo.Table_6 ([Date], GROSS, UTZ, LAB, XRAY, ECG, ECHO)
-                        VALUES (@DateToday, @Price, @UTZCount, @LABCount, @XRAYCount, @ECGCount, @ECHOCount)";
-                                }
-
-                                // Count the occurrences of each category
-                                int utzCount = categories.Count(c => c.Equals("UTZ", StringComparison.OrdinalIgnoreCase));
-                                int labCount = categories.Count(c => c.Equals("LAB", StringComparison.OrdinalIgnoreCase));
-                                int xrayCount = categories.Count(c => c.Equals("XRAY", StringComparison.OrdinalIgnoreCase));
-                                int ecgCount = categories.Count(c => c.Equals("ECG", StringComparison.OrdinalIgnoreCase));
-                                int echoCount = categories.Count(c => c.Equals("ECHO", StringComparison.OrdinalIgnoreCase));
-
-                                using (SqlCommand updateOrInsertCommand = new SqlCommand(queryUpdateOrInsertTable6, connection, transaction))
-                                {
-                                    updateOrInsertCommand.Parameters.AddWithValue("@DateToday", dateValue1);
-                                    updateOrInsertCommand.Parameters.AddWithValue("@Price", priceValue);
-                                    updateOrInsertCommand.Parameters.AddWithValue("@UTZCount", utzCount);
-                                    updateOrInsertCommand.Parameters.AddWithValue("@LABCount", labCount);
-                                    updateOrInsertCommand.Parameters.AddWithValue("@XRAYCount", xrayCount);
-                                    updateOrInsertCommand.Parameters.AddWithValue("@ECGCount", ecgCount);
-                                    updateOrInsertCommand.Parameters.AddWithValue("@ECHOCount", echoCount);
-
-                                    int rowsAffected = updateOrInsertCommand.ExecuteNonQuery();
-                                    if (rowsAffected > 0)
-                                    {
-                                        // Successfully updated or inserted into Table_6
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("Failed to update Table_6. Please check your input.");
-                                    }
-                                }
-
-                                // Commit transaction
-                                transaction.Commit();
-
-                                // Provide feedback to the user
-                                MessageBox.Show("Data saved successfully!");
-
-                                // Refresh DataGridViews
-                                
-                                ReorganizeIDs();
-                                LoadDataIntoDataGridView();
-
-                                // Clear input fields after adding data
-                                ClearInputFields();
+                                checkCommand.Parameters.AddWithValue("@Text1", text1);
+                                count = (int)checkCommand.ExecuteScalar();
                             }
-                            catch (Exception ex)
+
+                            if (count > 0)
                             {
-                                transaction.Rollback();
-                                MessageBox.Show($"An error occurred: {ex.Message}");
+                                using (SqlCommand updateCommand = new SqlCommand(queryTable1Update, connection, transaction))
+                                {
+                                    updateCommand.Parameters.AddWithValue("@Text1", text1);
+                                    updateCommand.Parameters.AddWithValue("@Text2", text2);
+                                    updateCommand.Parameters.AddWithValue("@Text3", text3);
+                                    updateCommand.Parameters.AddWithValue("@Text4", text4);
+                                    updateCommand.Parameters.AddWithValue("@Text5", text5);
+                                    updateCommand.Parameters.AddWithValue("@Text6", priceValue);
+                                    updateCommand.Parameters.AddWithValue("@Text7", string.Join(", ", categories));
+                                    updateCommand.Parameters.AddWithValue("@DateValue", dateValue);
+                                    updateCommand.Parameters.AddWithValue("@DateValue1", dateValue1);
+                                    updateCommand.Parameters.AddWithValue("@Combo1", combo1);
+                                    updateCommand.Parameters.AddWithValue("@Combo2", combo2);
+
+                                    updateCommand.ExecuteNonQuery();
+                                }
                             }
+                            else
+                            {
+                                using (SqlCommand insertCommand = new SqlCommand(queryTable1Insert, connection, transaction))
+                                {
+                                    insertCommand.Parameters.AddWithValue("@Text1", text1);
+                                    insertCommand.Parameters.AddWithValue("@Text2", text2);
+                                    insertCommand.Parameters.AddWithValue("@Text3", text3);
+                                    insertCommand.Parameters.AddWithValue("@Text4", text4);
+                                    insertCommand.Parameters.AddWithValue("@Text5", text5);
+                                    insertCommand.Parameters.AddWithValue("@Text6", priceValue);
+                                    insertCommand.Parameters.AddWithValue("@Text7", string.Join(", ", categories));
+                                    insertCommand.Parameters.AddWithValue("@DateValue", dateValue);
+                                    insertCommand.Parameters.AddWithValue("@DateValue1", dateValue1);
+                                    insertCommand.Parameters.AddWithValue("@Combo1", combo1);
+                                    insertCommand.Parameters.AddWithValue("@Combo2", combo2);
+
+                                    insertCommand.ExecuteNonQuery();
+                                }
+                            }
+
+                            // ✅ **Check if patient exists in Table_5**
+                            string queryCheckExistenceTable5 = "SELECT COUNT(*) FROM dbo.Table_5 WHERE [Patient name] = @Text1";
+                            int countTable5;
+                            using (SqlCommand checkCommand = new SqlCommand(queryCheckExistenceTable5, connection, transaction))
+                            {
+                                checkCommand.Parameters.AddWithValue("@Text1", text1);
+                                countTable5 = (int)checkCommand.ExecuteScalar();
+                            }
+
+                            if (countTable5 > 0)
+                            {
+                                using (SqlCommand updateCommand = new SqlCommand(queryTable5Update, connection, transaction))
+                                {
+                                    updateCommand.Parameters.AddWithValue("@Text1", text1);
+                                    updateCommand.Parameters.AddWithValue("@Text2", text2);
+                                    updateCommand.Parameters.AddWithValue("@Text3", text3);
+                                    updateCommand.Parameters.AddWithValue("@Text4", text4);
+                                    updateCommand.Parameters.AddWithValue("@Text5", text5);
+                                    updateCommand.Parameters.AddWithValue("@Text6", priceValue);
+                                    updateCommand.Parameters.AddWithValue("@Text7", string.Join(", ", categories));
+                                    updateCommand.Parameters.AddWithValue("@DateValue", dateValue);
+                                    updateCommand.Parameters.AddWithValue("@DateValue1", dateValue1);
+                                    updateCommand.Parameters.AddWithValue("@Combo1", combo1);
+                                    updateCommand.Parameters.AddWithValue("@Combo2", combo2);
+
+                                    updateCommand.ExecuteNonQuery();
+                                }
+                            }
+                            else
+                            {
+                                using (SqlCommand insertCommand = new SqlCommand(queryTable5Insert, connection, transaction))
+                                {
+                                    insertCommand.Parameters.AddWithValue("@Text1", text1);
+                                    insertCommand.Parameters.AddWithValue("@Text2", text2);
+                                    insertCommand.Parameters.AddWithValue("@Text3", text3);
+                                    insertCommand.Parameters.AddWithValue("@Text4", text4);
+                                    insertCommand.Parameters.AddWithValue("@Text5", text5);
+                                    insertCommand.Parameters.AddWithValue("@Text6", priceValue);
+                                    insertCommand.Parameters.AddWithValue("@Text7", string.Join(", ", categories));
+                                    insertCommand.Parameters.AddWithValue("@DateValue", dateValue);
+                                    insertCommand.Parameters.AddWithValue("@DateValue1", dateValue1);
+                                    insertCommand.Parameters.AddWithValue("@Combo1", combo1);
+                                    insertCommand.Parameters.AddWithValue("@Combo2", combo2);
+
+                                    insertCommand.ExecuteNonQuery();
+                                }
+                            }
+
+                            transaction.Commit();
+                            MessageBox.Show("Data saved successfully!");
+                            ReorganizeIDs();
+                            LoadDataIntoDataGridView();
+                            ClearInputFields();
+                        }
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
+                            MessageBox.Show($"An error occurred: {ex.Message}");
                         }
                     }
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"An error occurred: {ex.Message}");
-                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred: {ex.Message}");
             }
         }
 
 
-          // Method to Load Data into DataGridView
-            private void LoadDataIntoDataGridView()
+
+        // Method to Load Data into DataGridView
+        private void LoadDataIntoDataGridView()
         {
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
             string query = "SELECT * FROM dbo.Table_1";
@@ -886,6 +817,13 @@ namespace Pure_Health
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void button5_Click_1(object sender, EventArgs e)
+        {
+            Form formArchive = new Form();
+            formArchive.Show();
+            this.Hide();
         }
     }
 
