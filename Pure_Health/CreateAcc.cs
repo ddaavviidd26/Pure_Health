@@ -30,16 +30,14 @@ namespace Pure_Health
             textBox1.Text = "Enter Email Address";
             textBox1.ForeColor = Color.Gray;
 
-            textBox2.Text = "Enter Purehealth code";
-            textBox2.ForeColor = Color.Gray;
+           
            
             Password.ForeColor = Color.Gray;
 
             Username.Text = "Enter Username";
             Username.ForeColor = Color.Gray;
 
-            textBox2.Enter += textBox2_Enter;
-            textBox2.Leave += textBox2_Leave;
+            
 
             textBox1.Enter += textBox1_Enter;
             textBox1.Leave += textBox1_Leave;
@@ -215,20 +213,12 @@ namespace Pure_Health
 
         private void textBox2_Enter(object sender, EventArgs e)
         {
-            if (textBox2.Text == "Enter Purehealth code")
-            {
-                textBox2.Text = "";
-
-            }
+            
         }
 
         private void textBox2_Leave(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(textBox2.Text))
-            {
-                textBox2.Text = "Enter Purehealth code";
-
-            }
+            
         }
     }
 }

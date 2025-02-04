@@ -101,6 +101,16 @@ namespace Pure_Health
             string purehealthCode = textBox3.Text.Trim();
 
             // Validate input
+            if (newPassword.Length < 8)
+            {
+                MessageBox.Show("Password must be at least 8 characters long!", "Weak Password", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (confirmPassword.Length < 8)
+            {
+                MessageBox.Show("Password must be at least 8 characters long!", "Weak Password", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             if (string.IsNullOrEmpty(newPassword) || string.IsNullOrEmpty(confirmPassword) || string.IsNullOrEmpty(purehealthCode))
             {
                 MessageBox.Show("Please fill in all fields.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -119,6 +129,7 @@ namespace Pure_Health
                 MessageBox.Show("Invalid Purehealth Code. Please try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+            
 
             string query = @"
            UPDATE dbo.Table_7 

@@ -14,6 +14,7 @@ namespace Pure_Health
 {
     public partial class formArchive : Form
     {
+        private string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
         public formArchive()
         {
             this.Paint += Form1_Paint;
@@ -40,6 +41,7 @@ namespace Pure_Health
         }
         private void formArchive_Load(object sender, EventArgs e)
         {
+            CustomizeSearchButton();
             CustomizeDataGridView();
             string connectionString = "Server=PC-MARKDAVID;Database=Purehealth;Trusted_Connection=True;";
             string query = "SELECT * FROM dbo.Table_5";
@@ -147,6 +149,64 @@ namespace Pure_Health
                 adapter.Fill(dataTable);
                 dataGridView1.DataSource = dataTable; // Replace myDataGridView with your actual DataGridView name
             }
+        }
+        private void CustomizeSearchButton()
+        {
+            // Set button properties
+
+
+            txtSearch.BorderStyle = BorderStyle.None; // Remove default border
+            txtSearch.Font = new Font("Cambria", 16, FontStyle.Regular);
+            txtSearch.ForeColor = Color.FromArgb(74, 54, 35); // Light brown color for text
+            txtSearch.BackColor = Color.FromArgb(231, 224, 202); // Soft beige background
+            txtSearch.Size = new Size(100, 35); // Set size of the text box
+            txtSearch.Padding = new Padding(10, 5, 10, 5); // Padding to give it a modern feel
+            txtSearch.Cursor = Cursors.IBeam; // Text cursor when typing
+            txtSearch.TextAlign = HorizontalAlignment.Left; // Text alignment
+            txtSearch.MaxLength = 60; // Set a maximum character limit
+        }
+        private void TxtSearch_TextChanged(object sender, EventArgs e)
+        {
+            string searchTerm = txtSearch.Text.Trim();
+            LoadPatientData(searchTerm);
+        }
+        private void LoadPatientData(string searchTerm)
+        {
+            string query = "SELECT * FROM dbo.Table_5 WHERE 1=1";
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                if (int.TryParse(searchTerm, out _))
+                {
+                    query += " AND ID = @SearchTerm"; // Numeric ID search
+                }
+                else
+                {
+                    query += " AND ([Patient name] LIKE @SearchTerm OR Address LIKE @SearchTerm OR Gender LIKE @SearchTerm OR [Test to conduct] LIKE @SearchTerm OR Referral LIKE @SearchTerm)";
+                }
+            }
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    if (!string.IsNullOrWhiteSpace(searchTerm))
+                    {
+                        cmd.Parameters.AddWithValue("@SearchTerm", searchTerm.All(char.IsDigit) ? searchTerm : $"%{searchTerm}%");
+                    }
+
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                    DataTable dt = new DataTable();
+                    adapter.Fill(dt);
+
+                    dataGridView1.DataSource = dt;
+                }
+            }
+        }
+        private void txtSearch_TextChanged(object sender, EventArgs e)
+        {
+             string searchTerm = txtSearch.Text.Trim();
+            LoadPatientData(searchTerm);
         }
     }
 }

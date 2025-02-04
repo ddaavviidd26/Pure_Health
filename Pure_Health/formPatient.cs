@@ -302,6 +302,33 @@ namespace Pure_Health
                     MessageBox.Show("Invalid price entered.");
                     return;
                 }
+                if (string.IsNullOrWhiteSpace(text1))
+                {
+                    MessageBox.Show("Patient name cannot be empty.");
+                    return;
+                }
+                if (text1.Length > 30)
+                {
+                    MessageBox.Show("Maximum 30 characters allowed.");
+                    return;
+                }
+                if (!Regex.IsMatch(text1, @"^[A-Za-z\s]+$"))
+                {
+                    MessageBox.Show("Invalid Name: Only letters allowed.");
+                    return;
+                }
+                if (!Regex.IsMatch(text3, @"^\d{10}$"))
+                {
+                    MessageBox.Show("Invalid Contact Number. Please enter exactly 10 digits (numbers only).",
+                                    "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                if (!Regex.IsMatch(text4, @"^\d{2}$") && (!Regex.IsMatch(text4, @"^\d{1}$")))
+                {
+                    MessageBox.Show("Invalid Age.",
+                                    "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
                 string[] categories = textBox7.Text
                     .Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries)
